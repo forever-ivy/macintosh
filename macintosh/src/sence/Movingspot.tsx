@@ -1,7 +1,7 @@
 import { Vector3 } from "three";
 import { useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { SpotLight } from "@react-three/drei";
+import { SpotLight, useDepthBuffer } from "@react-three/drei";
 import { SpotLight as ThreeSpotLight } from "three";
 
 interface MovingSpotProps {
@@ -14,6 +14,7 @@ export default function MovingSpot({
   ...props
 }: MovingSpotProps) {
   const light = useRef<ThreeSpotLight>(null);
+  const depthBuffer = useDepthBuffer({ frames: 1 });
   const viewport = useThree((state) => state.viewport);
 
   useFrame((state) => {
@@ -34,15 +35,12 @@ export default function MovingSpot({
     <SpotLight
       castShadow
       ref={light}
-      penumbra={0}
-      distance={30}
-      angle={2.5}
+      penumbra={1}
+      distance={6}
+      angle={0.35}
       attenuation={5}
-      decay={0.1}
-      anglePower={6}
-      intensity={30}
-      radiusTop={0.5}
-      radiusBottom={15}
+      anglePower={4}
+      intensity={2}
       {...props}
     />
   );

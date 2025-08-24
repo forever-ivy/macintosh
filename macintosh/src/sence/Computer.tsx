@@ -1,9 +1,28 @@
 import { useGLTF } from "@react-three/drei";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
+import * as THREE from "three";
 
 function ComputerModel() {
   const gltf = useGLTF("/static/models/Computer/macintosh_classic_1991.glb");
-  return <primitive object={gltf.scene} scale={10} position={[0, 0, 0]} />;
+
+  useEffect(() => {
+    // 遍历模型中的所有网格，启用平滑着色
+    gltf.scene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.geometry.computeVertexNormals();
+        child.material.flatShading = false;
+      }
+    });
+  }, [gltf]);
+
+  return (
+    <primitive
+      object={gltf.scene}
+      scale={10}
+      position={[2.5, 0, -2.5]}
+      rotation={[0, -Math.PI / 6, 0]}
+    />
+  );
 }
 
 export default function Computer() {

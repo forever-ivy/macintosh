@@ -1,6 +1,7 @@
 import { Canvas } from "@react-three/fiber";
 import Demo from "./sence/demo"; // 改为命名导入
 import { useCameraStore } from "./stores/cameraStore";
+import { EffectComposer, FXAA } from "@react-three/postprocessing";
 
 export default function App() {
   const { resetCamera, focusOnObject } = useCameraStore();
@@ -28,6 +29,9 @@ export default function App() {
         camera={{ position: [4, -1, 8], fov: 35 }}
       >
         <Demo />
+        <EffectComposer>
+          <FXAA />
+        </EffectComposer>
       </Canvas>
     </div>
   );
