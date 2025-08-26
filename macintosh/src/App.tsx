@@ -1,6 +1,6 @@
 import { Canvas } from "@react-three/fiber";
-import Demo from "./sence/demo"; // 改为命名导入
-// import { useCameraStore } from "./stores/cameraStore";
+import Scene from "./sence/Sence";
+
 import { EffectComposer, FXAA } from "@react-three/postprocessing";
 
 export default function App() {
@@ -31,7 +31,7 @@ export default function App() {
           camera.lookAt(2.5, 0, -2.5);
         }}
       >
-        <Demo />
+        <Scene />
         <EffectComposer>
           <FXAA />
         </EffectComposer>
