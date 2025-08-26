@@ -1,22 +1,39 @@
-import { MemoryRouter, Routes, Route, Navigate } from "react-router-dom";
-import ScenePage from "./pages/3D";
-import Loadingpage from "./pages/Loadingpage";
+import { Canvas } from "@react-three/fiber";
+import Demo from "./sence/demo"; // 改为命名导入
+// import { useCameraStore } from "./stores/cameraStore";
+import { EffectComposer, FXAA } from "@react-three/postprocessing";
 
 export default function App() {
   return (
-    <MemoryRouter initialEntries={["/"]}>
-      <div className="w-screen h-screen bg-[#122] fixed inset-0 overflow-hidden">
-        <Routes>
-          {/* Loading 页面作为首页 */}
-          <Route path="/" element={<Loadingpage />} />
+    <div className="w-screen h-screen relative">
+      {/* <div className="absolute top-4 left-4 z-50 pointer-events-auto">
+        <button
+          className="bg-blue-500 text-white px-3 py-1 rounded mr-2"
+          onClick={resetCamera}
+        >
+          重置相机
+        </button>
+        <button
+          className="bg-green-500 text-white px-3 py-1 rounded"
+          onClick={focusOnObject}
+        >
+          聚焦物体
+        </button>
+      </div> */}
 
-          {/* 3D 场景页面 */}
-          <Route path="/scene" element={<ScenePage />} />
-
-          {/* 所有其他路径都重定向到首页 */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </div>
-    </MemoryRouter>
+      <Canvas
+        gl={{ antialias: true }}
+        dpr={[1, 1.5]}
+        camera={{ position: [-25, 16, 50], fov: 35 }}
+        onCreated={({ camera }) => {
+          camera.lookAt(2.5, 0, -2.5);
+        }}
+      >
+        <Demo />
+        <EffectComposer>
+          <FXAA />
+        </EffectComposer>
+      </Canvas>
+    </div>
   );
 }
