@@ -3,7 +3,7 @@ import { Suspense, useEffect } from "react";
 import * as THREE from "three";
 
 function ComputerModel() {
-  const gltf = useGLTF("/static/models/Computer/macintosh_classic_1991.glb");
+  const gltf = useGLTF("/models/Computer/macintosh_classic_1991.glb");
 
   useEffect(() => {
     // 遍历模型中的所有网格，启用平滑着色
@@ -19,8 +19,8 @@ function ComputerModel() {
     <primitive
       object={gltf.scene}
       scale={10}
-      position={[2.5, 0, -2.5]}
-      rotation={[0, -Math.PI / 6, 0]}
+      position={[2.5, -1, -2.5]}
+      rotation={[0, -Math.PI / 4, 0]}
     />
   );
 }

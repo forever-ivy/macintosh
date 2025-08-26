@@ -6,27 +6,90 @@ import {
 } from "@react-three/drei";
 import { useRef, useEffect } from "react";
 import Computer from "./Computer";
-import { useCameraStore } from "../stores/cameraStore";
+import { gsap } from "gsap";
+import * as THREE from "three";
+// import { useCameraStore } from "../stores/cameraStore";
 
 export default function Demo() {
   const depthBuffer = useDepthBuffer({ size: 256 });
   const cameraControlsRef = useRef<CameraControls>(null);
 
-  const setCameraControlsRef = useCameraStore(
-    (state) => state.setCameraControlsRef
+  // const setCameraControlsRef = useCameraStore(
+  //   (state) => state.setCameraControlsRef
+  // );
+
+  // useEffect(() => {
+  //   if (cameraControlsRef.current) {
+  //     setCameraControlsRef({ current: cameraControlsRef.current });
+  //   }
+  // }, [setCameraControlsRef]);
+
+  const curve = new THREE.CatmullRomCurve3(
+    [
+      new THREE.Vector3(-25, 16, 50),
+      new THREE.Vector3(-15, 14, 55),
+      new THREE.Vector3(-5, 12, 50),
+      new THREE.Vector3(6, 10, 35),
+      new THREE.Vector3(12, 8, 15),
+      new THREE.Vector3(14, 6, 0),
+      new THREE.Vector3(10, 4, -7),
+      new THREE.Vector3(0, 2, -13),
+      new THREE.Vector3(-6, -5, -8),
+      new THREE.Vector3(-8, -3, -4),
+      new THREE.Vector3(-6, -1, 0),
+      new THREE.Vector3(-2.15, 0, 2.15),
+    ],
+    false,
+    "centripetal",
+    0.3
+  );
+
+  const _tmp = new THREE.Vector3();
+  const animationProgress = { value: 0 };
+  const pathAnimation = gsap.fromTo(
+    animationProgress,
+    { value: 0 },
+    {
+      value: 1,
+      duration: 6,
+      delay: 1,
+      ease: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+      onUpdate() {
+        const value = animationProgress.value;
+        curve.getPoint(value, _tmp);
+        const cameraX = _tmp.x;
+        const cameraY = _tmp.y;
+        const cameraZ = _tmp.z;
+
+        if (cameraControlsRef.current) {
+          cameraControlsRef.current.normalizeRotations().setLookAt(
+            cameraX,
+            cameraY,
+            cameraZ,
+            2.5,
+            0,
+            -2.5, // 始终看向原点
+            false // 禁用 CameraControls 的过渡动画
+          );
+        }
+      },
+      onStart() {
+        if (cameraControlsRef.current) {
+          cameraControlsRef.current.enabled = false; // 动画开始时禁用手动控制
+        }
+      },
+      onComplete() {
+        if (cameraControlsRef.current) {
+          cameraControlsRef.current.enabled = true; // 动画结束后恢复手动控制
+          cameraControlsRef.current.setTarget(2.5, 0, -2.5, true);
+        }
+      },
+    }
   );
 
   useEffect(() => {
-    if (cameraControlsRef.current) {
-      setCameraControlsRef({ current: cameraControlsRef.current });
-    }
-  }, [setCameraControlsRef]);
-
-  useEffect(() => {
-    if (cameraControlsRef.current) {
-      cameraControlsRef.current.rotateAzimuthTo({});
-    }
-  }, []);
+    pathAnimation.play();
+  }, [pathAnimation]);
 
   return (
     <>
@@ -64,18 +127,15 @@ export default function Demo() {
       <CameraControls
         ref={cameraControlsRef}
         enabled={true}
-        truckSpeed={1.0}
-        enableZoom={true}
-        enableRotate={true}
         minDistance={5}
-        maxDistance={20}
+        maxDistance={40}
         infinityDolly={false}
+        dollySpeed={0.1}
         minPolarAngle={0}
         maxPolarAngle={Math.PI / 2}
-        dampingFactor={0.05}
         smoothTime={0.25}
-        autoRotate={true}
-        autoRotateSpeed={10.0}
+        truck={false}
+        setOrbitPoint={[2.5, 0, -2.5]}
       />
 
       <Stage
@@ -91,8 +151,8 @@ export default function Demo() {
           smooth: true,
           resolution: 1024,
         }}
-        adjustCamera={6}
-        environment="night"
+        adjustCamera={false}
+        environment={{ files: "/environment/dikhololo_night_4k.hdr" }}
       >
         <Computer />
       </Stage>

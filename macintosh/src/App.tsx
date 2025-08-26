@@ -24,9 +24,12 @@ export default function App() {
       </div>
 
       <Canvas
-        gl={{ antialias: false }}
+        gl={{ antialias: true }}
         dpr={[1, 1.5]}
-        camera={{ position: [4, -1, 8], fov: 35 }}
+        camera={{ position: [-25, 16, 50], fov: 35 }}
+        onCreated={({ camera }) => {
+          camera.lookAt(2.5, 0, -2.5);
+        }}
       >
         <Demo />
         <EffectComposer>
