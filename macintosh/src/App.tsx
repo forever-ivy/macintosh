@@ -1,14 +1,14 @@
 import { Canvas } from "@react-three/fiber";
 import Demo from "./sence/demo"; // 改为命名导入
-import { useCameraStore } from "./stores/cameraStore";
+// import { useCameraStore } from "./stores/cameraStore";
 import { EffectComposer, FXAA } from "@react-three/postprocessing";
 
 export default function App() {
-  const { resetCamera, focusOnObject } = useCameraStore();
+  // const { resetCamera, focusOnObject } = useCameraStore();
 
   return (
     <div className="w-screen h-screen relative">
-      <div className="absolute top-4 left-4 z-50 pointer-events-auto">
+      {/* <div className="absolute top-4 left-4 z-50 pointer-events-auto">
         <button
           className="bg-blue-500 text-white px-3 py-1 rounded mr-2"
           onClick={resetCamera}
@@ -21,7 +21,7 @@ export default function App() {
         >
           聚焦物体
         </button>
-      </div>
+      </div> */}
 
       <Canvas
         gl={{ antialias: true }}

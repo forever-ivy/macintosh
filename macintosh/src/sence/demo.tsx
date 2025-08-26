@@ -8,6 +8,7 @@ import { useRef, useEffect } from "react";
 import Computer from "./Computer";
 import { gsap } from "gsap";
 import * as THREE from "three";
+
 // import { useCameraStore } from "../stores/cameraStore";
 
 export default function Demo() {
@@ -52,7 +53,7 @@ export default function Demo() {
     {
       value: 1,
       duration: 6,
-      delay: 1,
+      delay: 2.5,
       ease: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
       onUpdate() {
         const value = animationProgress.value;
@@ -93,22 +94,22 @@ export default function Demo() {
 
   return (
     <>
-      <color attach="background" args={["#121212"]} />
+      <color attach="background" args={["#222"]} />
 
       <SpotLight
-        position={[-2.5, 14, -0.5]}
+        position={[-10, 25, -0.5]} // 提高光源位置，更像从天而降的圣光
         castShadow={false}
-        penumbra={0.9} // 降低边缘硬度
-        distance={25} // 稍微减少距离
-        angle={0.6} // 减小光锥角度
-        attenuation={15} // 减少衰减距离
-        decay={2.5} // 增加衰减率
-        anglePower={10.0} // 减少边缘衰减强度
-        intensity={1} // 降低强度
-        radiusTop={0.8} // 减小顶部半径
-        radiusBottom={15.0} // 减小底部半径
-        color="#fff8dc" // 柔和的米白色
-        opacity={0.2} // 添加透明度
+        penumbra={0.7} // 稍微增加边缘硬度，让光束更清晰
+        distance={45} // 大幅增加照射距离
+        angle={0.4} // 进一步减小光锥角度，形成更集中的光束
+        attenuation={30} // 增加衰减距离，让光照得更远
+        decay={1.8} // 减少衰减率，保持远距离亮度
+        anglePower={15.0} // 增加边缘衰减强度，突出中心光束
+        intensity={1.5} // 提高强度，增强神圣感
+        radiusTop={0.5} // 减小顶部半径，形成更集中的光源
+        radiusBottom={20.0} // 增加底部半径，扩大照射范围
+        color="#fff8e7" // 更温暖的金白色，增强神圣感
+        opacity={0.3} // 稍微增加透明度，让光效更明显
         volumetric={true} // 启用体积光
         depthBuffer={depthBuffer}
       />
@@ -128,7 +129,7 @@ export default function Demo() {
         ref={cameraControlsRef}
         enabled={true}
         minDistance={5}
-        maxDistance={40}
+        maxDistance={30}
         infinityDolly={false}
         dollySpeed={0.1}
         minPolarAngle={0}
@@ -139,7 +140,7 @@ export default function Demo() {
       />
 
       <Stage
-        intensity={0.4}
+        intensity={3}
         preset="rembrandt"
         shadows={{
           type: "",
