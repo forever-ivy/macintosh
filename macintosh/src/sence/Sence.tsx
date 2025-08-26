@@ -15,6 +15,7 @@ export default function Scene() {
   const depthBuffer = useDepthBuffer({ size: 256 });
   const cameraControlsRef = useRef<CameraControls>(null);
   const spotLightRef = useRef<THREE.SpotLight>(null!);
+  const animationRef = useRef<gsap.core.Tween | null>(null);
 
   // const setCameraControlsRef = useCameraStore(
   //   (state) => state.setCameraControlsRef
@@ -26,76 +27,82 @@ export default function Scene() {
   //   }
   // }, [setCameraControlsRef]);
 
-  const curve = new THREE.CatmullRomCurve3(
-    [
-      new THREE.Vector3(-25, 16, 50),
-      new THREE.Vector3(-15, 14, 55),
-      new THREE.Vector3(-5, 12, 50),
-      new THREE.Vector3(6, 10, 35),
-      new THREE.Vector3(12, 8, 15),
-      new THREE.Vector3(14, 6, 0),
-      new THREE.Vector3(10, 4, -7),
-      new THREE.Vector3(0, 2, -13),
-      new THREE.Vector3(-6, -5, -8),
-      new THREE.Vector3(-8, -3, -4),
-      new THREE.Vector3(-6, -1, 0),
-      new THREE.Vector3(-2.15, 0, 2.15),
-    ],
-    false,
-    "centripetal",
-    0.3
-  );
-
-  const _tmp = new THREE.Vector3();
-  const animationProgress = { value: 0 };
-  const pathAnimation = gsap.fromTo(
-    animationProgress,
-    { value: 0 },
-    {
-      value: 1,
-      duration: 6,
-      delay: 2.5,
-      ease: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-      onUpdate() {
-        const value = animationProgress.value;
-        curve.getPoint(value, _tmp);
-        const cameraX = _tmp.x;
-        const cameraY = _tmp.y;
-        const cameraZ = _tmp.z;
-
-        if (cameraControlsRef.current) {
-          cameraControlsRef.current.normalizeRotations().setLookAt(
-            cameraX,
-            cameraY,
-            cameraZ,
-            2.5,
-            0,
-            -2.5, // 始终看向原点
-            false // 禁用 CameraControls 的过渡动画
-          );
-        }
-      },
-      onStart() {
-        if (cameraControlsRef.current) {
-          cameraControlsRef.current.enabled = false; // 动画开始时禁用手动控制
-        }
-      },
-      onComplete() {
-        if (cameraControlsRef.current) {
-          cameraControlsRef.current.enabled = true; // 动画结束后恢复手动控制
-          cameraControlsRef.current.setTarget(2.5, 0, -2.5, true);
-          if (spotLightRef.current) {
-            spotLightRef.current.position.set(2.5, 25, -2.5);
-            spotLightRef.current.target.position.set(2.5, 0, -2.5);
-          }
-        }
-      },
-    }
-  );
-
   useEffect(() => {
-    pathAnimation.play();
-  }, [pathAnimation]);
+    // 如果动画已经存在，先清理
+    if (animationRef.current) {
+      animationRef.current.kill();
+    }
+
+    const curve = new THREE.CatmullRomCurve3(
+      [
+        new THREE.Vector3(-25, 16, 50),
+        new THREE.Vector3(-15, 14, 55),
+        new THREE.Vector3(-5, 12, 50),
+        new THREE.Vector3(6, 10, 35),
+        new THREE.Vector3(12, 8, 15),
+        new THREE.Vector3(14, 6, 0),
+        new THREE.Vector3(10, 4, -7),
+        new THREE.Vector3(0, 2, -13),
+        new THREE.Vector3(-6, -5, -8),
+        new THREE.Vector3(-8, -3, -4),
+        new THREE.Vector3(-6, -1, 0),
+        new THREE.Vector3(-2.15, 0, 2.15),
+      ],
+      false,
+      "centripetal",
+      0.3
+    );
+
+    const _tmp = new THREE.Vector3();
+    const animationProgress = { value: 0 };
+
+    animationRef.current = gsap.fromTo(
+      animationProgress,
+      { value: 0 },
+      {
+        value: 1,
+        duration: 6,
+        delay: 2.5,
+        ease: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+        onUpdate() {
+          const value = animationProgress.value;
+          curve.getPoint(value, _tmp);
+          const cameraX = _tmp.x;
+          const cameraY = _tmp.y;
+          const cameraZ = _tmp.z;
+
+          if (cameraControlsRef.current) {
+            cameraControlsRef.current
+              .normalizeRotations()
+              .setLookAt(cameraX, cameraY, cameraZ, 2.5, 0, -2.5, false);
+          }
+        },
+        onStart() {
+          if (cameraControlsRef.current) {
+            cameraControlsRef.current.enabled = false;
+          }
+        },
+        onComplete() {
+          if (cameraControlsRef.current) {
+            cameraControlsRef.current.enabled = true;
+            cameraControlsRef.current.setTarget(2.5, 0, -2.5, true);
+            if (spotLightRef.current) {
+              spotLightRef.current.position.set(2.5, 25, -2.5);
+              spotLightRef.current.target.position.set(2.5, 0, -2.5);
+            }
+          }
+        },
+      }
+    );
+
+    animationRef.current.play();
+
+    return () => {
+      if (animationRef.current) {
+        animationRef.current.kill();
+      }
+    };
+  }, []); // 空依赖数组
 
   return (
     <>
