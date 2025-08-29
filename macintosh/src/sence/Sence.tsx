@@ -28,7 +28,13 @@ export default function Scene() {
   // }, [setCameraControlsRef]);
 
   useEffect(() => {
-    // 如果动画已经存在，先清理
+    if (!cameraControlsRef.current) return;
+    const controls = cameraControlsRef.current;
+
+    controls.enabled = false;
+
+    controls.setLookAt(-25, 16, 50, 2.5, 0, -2.5, false);
+
     if (animationRef.current) {
       animationRef.current.kill();
     }
@@ -65,42 +71,22 @@ export default function Scene() {
         delay: 2.5,
         ease: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         onUpdate() {
-          const value = animationProgress.value;
-          curve.getPoint(value, _tmp);
-          const cameraX = _tmp.x;
-          const cameraY = _tmp.y;
-          const cameraZ = _tmp.z;
-
-          if (cameraControlsRef.current) {
-            cameraControlsRef.current
-              .normalizeRotations()
-              .setLookAt(cameraX, cameraY, cameraZ, 2.5, 0, -2.5, false);
-          }
-        },
-        onStart() {
-          if (cameraControlsRef.current) {
-            cameraControlsRef.current.enabled = false;
-          }
+          curve.getPoint(animationProgress.value, _tmp);
+          controls.setLookAt(_tmp.x, _tmp.y, _tmp.z, 2.5, 0, -2.5, false);
         },
         onComplete() {
-          if (cameraControlsRef.current) {
-            cameraControlsRef.current.enabled = true;
-            cameraControlsRef.current.setTarget(2.5, 0, -2.5, true);
-            if (spotLightRef.current) {
-              spotLightRef.current.position.set(2.5, 25, -2.5);
-              spotLightRef.current.target.position.set(2.5, 0, -2.5);
-            }
+          controls.enabled = true; // 3) 动画结束再交还给用户
+          controls.setTarget(2.5, 0, -2.5, true);
+          if (spotLightRef.current) {
+            spotLightRef.current.position.set(2.5, 25, -2.5);
+            spotLightRef.current.target.position.set(2.5, 0, -2.5);
           }
         },
       }
     );
 
-    animationRef.current.play();
-
     return () => {
-      if (animationRef.current) {
-        animationRef.current.kill();
-      }
+      animationRef.current?.kill();
     };
   }, []); // 空依赖数组
 
@@ -149,7 +135,7 @@ export default function Scene() {
         maxPolarAngle={Math.PI / 2}
         smoothTime={0.25}
         truck={false}
-        setOrbitPoint={[2.5, 0, -2.5]}
+        // 移除 setOrbitPoint，避免与动画目标冲突
       />
 
       <Stage

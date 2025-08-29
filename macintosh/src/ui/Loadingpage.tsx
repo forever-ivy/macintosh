@@ -50,7 +50,7 @@ export default function Loadingpage() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    const audio = new Audio("/audio/startup/startupIntel.mp3");
+    const audio = new Audio("/audio/startup/StartupIntelT2Mac.wav");
     audio.preload = "auto";
     audio.volume = 1;
     audioRef.current = audio;
