@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import Noise from "../components/Noise";
 import TextType from "../components/Texttype";
 import { Suspense } from "react";
-import { useUIStore } from "../stores/uiStore";
+import { useNavigate } from "react-router-dom";
 
 interface WarningProps {
   show: boolean;
@@ -46,8 +46,8 @@ const DeviceCompatibilityWarning: React.FC = () => {
 };
 
 export default function Loadingpage() {
-  const setStarted = useUIStore((s) => s.setStarted);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const audio = new Audio("/audio/startup/StartupIntelT2Mac.wav");
@@ -65,7 +65,7 @@ export default function Loadingpage() {
 
   const handleStartClick = () => {
     playClickSound(); // 先播放音效
-    setStarted(true); // 再切换界面
+    navigate("/scene");
   };
 
   return (
