@@ -16,6 +16,7 @@ export default function Scene() {
   const cameraControlsRef = useRef<CameraControls>(null);
   const spotLightRef = useRef<THREE.SpotLight>(null!);
   const animationRef = useRef<gsap.core.Tween | null>(null);
+  const isAnimatingRef = useRef(false); // 添加动画状态标记
 
   // const setCameraControlsRef = useCameraStore(
   //   (state) => state.setCameraControlsRef
@@ -31,9 +32,15 @@ export default function Scene() {
     if (!cameraControlsRef.current) return;
     const controls = cameraControlsRef.current;
 
+    // 强制重置相机状态
     controls.enabled = false;
+    isAnimatingRef.current = true;
 
+    // 立即设置初始位置，不等待下一帧
     controls.setLookAt(-25, 16, 50, 2.5, 0, -2.5, false);
+
+    // 确保相机位置立即生效
+    controls.update(0);
 
     if (animationRef.current) {
       animationRef.current.kill();
@@ -62,20 +69,23 @@ export default function Scene() {
     const _tmp = new THREE.Vector3();
     const animationProgress = { value: 0 };
 
+    // 减少延迟时间，避免用户在等待期间操作
     animationRef.current = gsap.fromTo(
       animationProgress,
       { value: 0 },
       {
         value: 1,
         duration: 6,
-        delay: 2.5,
+        delay: 1.0, // 从2.5秒减少到1秒
         ease: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         onUpdate() {
+          if (!isAnimatingRef.current) return; // 检查动画状态
           curve.getPoint(animationProgress.value, _tmp);
           controls.setLookAt(_tmp.x, _tmp.y, _tmp.z, 2.5, 0, -2.5, false);
         },
         onComplete() {
-          controls.enabled = true; // 3) 动画结束再交还给用户
+          isAnimatingRef.current = false;
+          controls.enabled = true;
           controls.setTarget(2.5, 0, -2.5, true);
           if (spotLightRef.current) {
             spotLightRef.current.position.set(2.5, 25, -2.5);
@@ -86,9 +96,12 @@ export default function Scene() {
     );
 
     return () => {
-      animationRef.current?.kill();
+      if (animationRef.current) {
+        animationRef.current.kill();
+      }
+      isAnimatingRef.current = false;
     };
-  }, []); // 空依赖数组
+  }, []);
 
   return (
     <>
@@ -126,7 +139,7 @@ export default function Scene() {
 
       <CameraControls
         ref={cameraControlsRef}
-        enabled={true}
+        enabled={false} // 初始设为false，由动画控制
         minDistance={5}
         maxDistance={30}
         infinityDolly={false}
@@ -135,7 +148,6 @@ export default function Scene() {
         maxPolarAngle={Math.PI / 2}
         smoothTime={0.25}
         truck={false}
-        // 移除 setOrbitPoint，避免与动画目标冲突
       />
 
       <Stage

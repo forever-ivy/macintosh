@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import Noise from "../components/Noise";
 import TextType from "../components/Texttype";
-import { Suspense } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 interface WarningProps {
   show: boolean;
@@ -48,6 +48,7 @@ const DeviceCompatibilityWarning: React.FC = () => {
 export default function Loadingpage() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const navigate = useNavigate();
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
     const audio = new Audio("/audio/startup/StartupIntelT2Mac.wav");
@@ -65,11 +66,11 @@ export default function Loadingpage() {
 
   const handleStartClick = () => {
     playClickSound(); // 先播放音效
-    navigate("/scene");
+    setIsTransitioning(true); // 触发转场
   };
 
   return (
-    <Suspense>
+    <motion.div className="w-full h-full" exit={{ opacity: 0 }}>
       <div
         className="w-full h-full flex flex-col items-center justify-center"
         color="black"
@@ -96,8 +97,9 @@ export default function Loadingpage() {
                   />
                 </div>
                 <button
-                  className="btn btn-default hover:bg-gray-800 hover:text-white hover:shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95"
+                  className="btn btn-default hover:bg-gray-800 hover:text-white hover:shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={handleStartClick}
+                  disabled={isTransitioning}
                 >
                   Start
                 </button>
@@ -116,6 +118,17 @@ export default function Loadingpage() {
           <DeviceCompatibilityWarning />
         </div>
       </div>
-    </Suspense>
+
+      {/* 点击后淡入的全屏遮罩，动画完成再导航 */}
+      {isTransitioning && (
+        <motion.div
+          className="fixed inset-0 z-50 bg-black"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, ease: "easeInOut" }}
+          onAnimationComplete={() => navigate("/scene")}
+        />
+      )}
+    </motion.div>
   );
 }
