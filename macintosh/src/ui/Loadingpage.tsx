@@ -1,0 +1,91 @@
+import { useState, useEffect } from "react";
+import Noise from "../components/Noise";
+import TextType from "../components/Texttype";
+import Pixel from "../components/Pixel";
+
+interface WarningProps {
+  show: boolean;
+  message: string;
+  className?: string;
+}
+
+const Warning: React.FC<WarningProps> = ({ show, message, className = "" }) => {
+  if (!show) return null;
+
+  return (
+    <div className={`text-red-400 text-sm mb-4 ${className}`}>{message}</div>
+  );
+};
+
+const useMobileDetection = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  return isMobile;
+};
+
+const DeviceCompatibilityWarning: React.FC = () => {
+  const isMobile = useMobileDetection();
+
+  return (
+    <Warning
+      show={isMobile}
+      message="This experience is optimized for desktop. Mobile support is limited."
+    />
+  );
+};
+
+export default function Loadingpage() {
+  return (
+    <div
+      className="w-full h-full flex flex-col items-center justify-center"
+      color="black"
+    >
+      <div className="w-full h-full">
+        <div className="w-full h-full flex items-center justify-center">
+          <div
+            className="standard-dialog center scale-down flex flex-col items-center justify-center"
+            style={{ width: "30rem", height: "15rem" }}
+          >
+            <div className="flex flex-col items-center justify-between h-full py-8">
+              <div className="flex-1 flex flex-col items-center justify-center space-y-3 pb-4">
+                <h1 className="dialog-text font-bold text-lg mb-2">
+                  Macintosh Portfolio
+                </h1>
+                <TextType
+                  text={["Click start to begin"]}
+                  typingSpeed={70}
+                  pauseDuration={1500}
+                  showCursor={true}
+                  cursorCharacter="_"
+                  textColors={["blcak"]}
+                  className="dialog-text font-bold"
+                />
+              </div>
+              <button className="btn btn-default hover:bg-black">Start</button>
+            </div>
+
+            <p className="dialog-text ">© 1984 Apple Computer</p>
+          </div>
+        </div>
+        <Noise
+          patternSize={250}
+          patternScaleX={1}
+          patternScaleY={1}
+          patternRefreshInterval={2}
+          patternAlpha={15}
+        />
+        <DeviceCompatibilityWarning />
+      </div>
+    </div>
+  );
+}
