@@ -16,7 +16,6 @@ export default function Scene() {
   const cameraControlsRef = useRef<CameraControls>(null);
   const spotLightRef = useRef<THREE.SpotLight>(null!);
   const animationRef = useRef<gsap.core.Tween | null>(null);
-  const isAnimatingRef = useRef(false); // 添加一个标志位作为“锁”
 
   // const setCameraControlsRef = useCameraStore(
   //   (state) => state.setCameraControlsRef
@@ -29,11 +28,6 @@ export default function Scene() {
   // }, [setCameraControlsRef]);
 
   useEffect(() => {
-    // 如果动画正在运行，则直接返回，防止创建新动画
-    if (isAnimatingRef.current) {
-      return;
-    }
-
     // 如果动画已经存在，先清理
     if (animationRef.current) {
       animationRef.current.kill();
@@ -62,6 +56,21 @@ export default function Scene() {
     const _tmp = new THREE.Vector3();
     const animationProgress = { value: 0 };
 
+    // 1) 先把相机放到曲线起点，并锁定目标，且不启用过渡，避免初始“第二段动画”
+    curve.getPoint(0, _tmp);
+    if (cameraControlsRef.current) {
+      cameraControlsRef.current.enabled = false; // 动画前禁用，避免用户在 delay 期间改视角
+      cameraControlsRef.current.setLookAt(
+        _tmp.x,
+        _tmp.y,
+        _tmp.z,
+        2.5,
+        0,
+        -2.5,
+        false
+      );
+    }
+
     animationRef.current = gsap.fromTo(
       animationProgress,
       { value: 0 },
@@ -84,16 +93,16 @@ export default function Scene() {
           }
         },
         onStart() {
-          isAnimatingRef.current = true; // 动画开始时，上锁
+          // 这里可以保留，已提前禁用，也不影响
           if (cameraControlsRef.current) {
             cameraControlsRef.current.enabled = false;
           }
         },
         onComplete() {
-          isAnimatingRef.current = false; // 动画完成时，解锁
           if (cameraControlsRef.current) {
             cameraControlsRef.current.enabled = true;
-            cameraControlsRef.current.setTarget(2.5, 0, -2.5, true);
+            // 2) 目标已在动画中固定为 (2.5, 0, -2.5)，不再触发额外的平滑过渡
+            // cameraControlsRef.current.setTarget(2.5, 0, -2.5, false);
             if (spotLightRef.current) {
               spotLightRef.current.position.set(2.5, 25, -2.5);
               spotLightRef.current.target.position.set(2.5, 0, -2.5);
@@ -109,7 +118,6 @@ export default function Scene() {
       if (animationRef.current) {
         animationRef.current.kill();
       }
-      isAnimatingRef.current = false; // 组件卸载时也确保解锁
     };
   }, []); // 空依赖数组
 
@@ -149,7 +157,7 @@ export default function Scene() {
 
       <CameraControls
         ref={cameraControlsRef}
-        // enabled 属性现在完全由动画逻辑控制
+        // enabled={true}
         minDistance={5}
         maxDistance={30}
         infinityDolly={false}
