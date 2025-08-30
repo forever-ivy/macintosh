@@ -36,7 +36,7 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
         new THREE.Vector3(-6, -5, -8),
         new THREE.Vector3(-8, -3, -4),
         new THREE.Vector3(-6, -1, 0),
-        new THREE.Vector3(-2.15, 0, 2.15),
+        new THREE.Vector3(-3.6, 3.7, 3.6),
       ],
       false,
       "centripetal",
@@ -66,7 +66,7 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
       {
         value: 1,
         duration: 6,
-        delay: 0.5,
+        delay: 0,
         ease: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         onUpdate() {
           const value = animationProgress.value;
@@ -90,6 +90,7 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
           if (cameraControlsRef.current) {
             cameraControlsRef.current.enabled = true;
             cameraControlsRef.current.setTarget(0, 0, 0, true);
+
             if (spotLightRef.current) {
               spotLightRef.current.position.set(2.5, 25, -2.5);
               spotLightRef.current.target.position.set(0, 0, 0);
