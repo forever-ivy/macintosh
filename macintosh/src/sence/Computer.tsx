@@ -6,7 +6,6 @@ function ComputerModel() {
   const gltf = useGLTF("/models/Computer/macintosh_classic_1991.glb");
 
   useEffect(() => {
-    // 遍历模型中的所有网格，启用平滑着色
     gltf.scene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
         child.geometry.computeVertexNormals();

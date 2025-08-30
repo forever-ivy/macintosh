@@ -46,10 +46,9 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
     const _tmp = new THREE.Vector3();
     const animationProgress = { value: 0 };
 
-    // 1) 先把相机放到曲线起点，并锁定目标，且不启用过渡，避免初始“第二段动画”
     curve.getPoint(0, _tmp);
     if (cameraControlsRef.current) {
-      cameraControlsRef.current.enabled = false; // 动画前禁用，避免用户在 delay 期间改视角
+      cameraControlsRef.current.enabled = false;
       cameraControlsRef.current.setLookAt(
         _tmp.x,
         _tmp.y,
@@ -83,7 +82,6 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
           }
         },
         onStart() {
-          // 这里可以保留，已提前禁用，也不影响
           if (cameraControlsRef.current) {
             cameraControlsRef.current.enabled = false;
           }
