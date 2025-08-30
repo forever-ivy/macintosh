@@ -18,8 +18,8 @@ function ComputerModel() {
     <primitive
       object={gltf.scene}
       scale={10}
-      position={[2.6, 0.1, -2.6]}
-      rotation={[0, -Math.PI / 4, 0]}
+      position={[3, -0.1, -3]}
+      rotation={[-0.1, -Math.PI / 4, -0.07]}
     />
   );
 }

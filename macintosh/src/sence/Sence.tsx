@@ -66,7 +66,7 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
       {
         value: 1,
         duration: 6,
-        delay: 0,
+        delay: 1.5,
         ease: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         onUpdate() {
           const value = animationProgress.value;
@@ -92,7 +92,7 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
             cameraControlsRef.current.setTarget(0, 0, 0, true);
 
             if (spotLightRef.current) {
-              spotLightRef.current.position.set(2.5, 25, -2.5);
+              spotLightRef.current.position.set(3, 25, -3);
               spotLightRef.current.target.position.set(0, 0, 0);
             }
           }
