@@ -9,9 +9,12 @@ import Computer from "./Computer";
 import { gsap } from "gsap";
 import * as THREE from "three";
 
-export default function Scene() {
+interface SceneProps {
+  cameraControlsRef: React.RefObject<CameraControls>;
+}
+
+export default function Scene({ cameraControlsRef }: SceneProps) {
   const depthBuffer = useDepthBuffer({ size: 256 });
-  const cameraControlsRef = useRef<CameraControls>(null);
   const spotLightRef = useRef<THREE.SpotLight>(null!);
   const animationRef = useRef<gsap.core.Tween | null>(null);
 
@@ -23,17 +26,9 @@ export default function Scene() {
     const curve = new THREE.CatmullRomCurve3(
       [
         new THREE.Vector3(-25, 16, 50),
-        new THREE.Vector3(-15, 14, 55),
-        new THREE.Vector3(-5, 12, 50),
-        new THREE.Vector3(6, 10, 35),
-        new THREE.Vector3(12, 8, 15),
-        new THREE.Vector3(14, 6, 0),
-        new THREE.Vector3(10, 4, -7),
-        new THREE.Vector3(0, 2, -13),
-        new THREE.Vector3(-6, -5, -8),
-        new THREE.Vector3(-8, -3, -4),
-        new THREE.Vector3(-6, -1, 0),
-        new THREE.Vector3(-2.15, 0, 2.15),
+        new THREE.Vector3(0, 12, 30),
+        new THREE.Vector3(10, 8, 15),
+        new THREE.Vector3(8, 5, 8),
       ],
       false,
       "centripetal",
@@ -61,7 +56,7 @@ export default function Scene() {
           if (cameraControlsRef.current) {
             cameraControlsRef.current
               .normalizeRotations()
-              .setLookAt(cameraX, cameraY, cameraZ, 2.5, 0, -2.5, false);
+              .setLookAt(cameraX, cameraY, cameraZ, 0, 0, 0, false);
           }
         },
         onStart() {
@@ -72,10 +67,10 @@ export default function Scene() {
         onComplete() {
           if (cameraControlsRef.current) {
             cameraControlsRef.current.enabled = true;
-            cameraControlsRef.current.setTarget(2.5, 0, -2.5, true);
+            cameraControlsRef.current.setTarget(0, 0, 0, true);
             if (spotLightRef.current) {
               spotLightRef.current.position.set(2.5, 25, -2.5);
-              spotLightRef.current.target.position.set(2.5, 0, -2.5);
+              spotLightRef.current.target.position.set(0, 0, 0);
             }
           }
         },
