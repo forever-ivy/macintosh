@@ -9,26 +9,16 @@ import Computer from "./Computer";
 import { gsap } from "gsap";
 import * as THREE from "three";
 
-// import { useCameraStore } from "../stores/cameraStore";
+interface SceneProps {
+  cameraControlsRef: React.RefObject<CameraControls>;
+}
 
-export default function Scene() {
+export default function Scene({ cameraControlsRef }: SceneProps) {
   const depthBuffer = useDepthBuffer({ size: 256 });
-  const cameraControlsRef = useRef<CameraControls>(null);
   const spotLightRef = useRef<THREE.SpotLight>(null!);
   const animationRef = useRef<gsap.core.Tween | null>(null);
 
-  // const setCameraControlsRef = useCameraStore(
-  //   (state) => state.setCameraControlsRef
-  // );
-
-  // useEffect(() => {
-  //   if (cameraControlsRef.current) {
-  //     setCameraControlsRef({ current: cameraControlsRef.current });
-  //   }
-  // }, [setCameraControlsRef]);
-
   useEffect(() => {
-    // 如果动画已经存在，先清理
     if (animationRef.current) {
       animationRef.current.kill();
     }
@@ -77,7 +67,7 @@ export default function Scene() {
       {
         value: 1,
         duration: 6,
-        delay: 2.5,
+        delay: 0.5,
         ease: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         onUpdate() {
           const value = animationProgress.value;
@@ -89,7 +79,7 @@ export default function Scene() {
           if (cameraControlsRef.current) {
             cameraControlsRef.current
               .normalizeRotations()
-              .setLookAt(cameraX, cameraY, cameraZ, 2.5, 0, -2.5, false);
+              .setLookAt(cameraX, cameraY, cameraZ, 0, 0, 0, false);
           }
         },
         onStart() {
@@ -101,11 +91,10 @@ export default function Scene() {
         onComplete() {
           if (cameraControlsRef.current) {
             cameraControlsRef.current.enabled = true;
-            // 2) 目标已在动画中固定为 (2.5, 0, -2.5)，不再触发额外的平滑过渡
-            // cameraControlsRef.current.setTarget(2.5, 0, -2.5, false);
+            cameraControlsRef.current.setTarget(0, 0, 0, true);
             if (spotLightRef.current) {
               spotLightRef.current.position.set(2.5, 25, -2.5);
-              spotLightRef.current.target.position.set(2.5, 0, -2.5);
+              spotLightRef.current.target.position.set(0, 0, 0);
             }
           }
         },
@@ -119,7 +108,7 @@ export default function Scene() {
         animationRef.current.kill();
       }
     };
-  }, []); // 空依赖数组
+  }, []);
 
   return (
     <>
@@ -127,33 +116,22 @@ export default function Scene() {
 
       <SpotLight
         ref={spotLightRef}
-        position={[-10, 25, -0.5]} // 提高光源位置，更像从天而降的圣光
+        position={[-10, 25, -0.5]}
         castShadow={false}
-        penumbra={0.7} // 稍微增加边缘硬度，让光束更清晰
-        distance={45} // 大幅增加照射距离
-        angle={0.4} // 进一步减小光锥角度，形成更集中的光束
-        attenuation={30} // 增加衰减距离，让光照得更远
-        decay={1.8} // 减少衰减率，保持远距离亮度
-        anglePower={15.0} // 增加边缘衰减强度，突出中心光束
-        intensity={1.5} // 提高强度，增强神圣感
-        radiusTop={0.5} // 减小顶部半径，形成更集中的光源
-        radiusBottom={20.0} // 增加底部半径，扩大照射范围
-        color="#fff8e7" // 更温暖的金白色，增强神圣感
-        opacity={0.3} // 稍微增加透明度，让光效更明显
-        volumetric={true} // 启用体积光
+        penumbra={0.7}
+        distance={45}
+        angle={0.4}
+        attenuation={30}
+        decay={1.8}
+        anglePower={15.0}
+        intensity={1.5}
+        radiusTop={0.5}
+        radiusBottom={20.0}
+        color="#fff8e7"
+        opacity={0.3}
+        volumetric={true}
         depthBuffer={depthBuffer}
       />
-
-      {/* <MovingSpot
-        depthBuffer={depthBuffer}
-        color={"#aaa8a8"}
-        position={[-4.5, 4.5, 12.5]}
-      /> */}
-      {/* <MovingSpot
-        depthBuffer={depthBuffer,4.5,}
-        color={spot2Color}
-        position={spot2Position}
-      /> */}
 
       <CameraControls
         ref={cameraControlsRef}
