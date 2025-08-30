@@ -36,7 +36,7 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
         new THREE.Vector3(-6, -5, -8),
         new THREE.Vector3(-8, -3, -4),
         new THREE.Vector3(-6, -1, 0),
-        new THREE.Vector3(-2.15, 0, 2.15),
+        new THREE.Vector3(-8, 0, 8),
       ],
       false,
       "centripetal",
@@ -51,8 +51,8 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
       { value: 0 },
       {
         value: 1,
-        duration: 6,
-        delay: 0.5,
+        duration: 8,
+        delay: 1.5,
         ease: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         onUpdate() {
           const value = animationProgress.value;
