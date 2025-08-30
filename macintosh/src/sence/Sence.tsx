@@ -65,7 +65,7 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
       { value: 0 },
       {
         value: 1,
-        duration: 6,
+        duration: 8,
         delay: 1.5,
         ease: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         onUpdate() {
