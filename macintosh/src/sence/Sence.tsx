@@ -76,7 +76,7 @@ export default function Scene() {
       {
         value: 1,
         duration: 6,
-        delay: 1.0, // 从2.5秒减少到1秒
+        delay: 0.5, // 从2.5秒减少到1秒
         ease: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         onUpdate() {
           if (!isAnimatingRef.current) return; // 检查动画状态
