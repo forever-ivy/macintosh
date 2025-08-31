@@ -146,7 +146,7 @@ export default function Loadingpage() {
                     ) : (
                       <TextType
                         text={["Click start to begin"]}
-                        typingSpeed={40}
+                        typingSpeed={100}
                         pauseDuration={1500}
                         showCursor={true}
                         cursorCharacter="_"
