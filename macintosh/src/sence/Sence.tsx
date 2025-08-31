@@ -36,7 +36,7 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
         new THREE.Vector3(-6, -5, -8),
         new THREE.Vector3(-8, -3, -4),
         new THREE.Vector3(-6, -1, 0),
-        new THREE.Vector3(-8, 0, 8),
+        new THREE.Vector3(-10, 0, 10),
       ],
       false,
       "centripetal",
