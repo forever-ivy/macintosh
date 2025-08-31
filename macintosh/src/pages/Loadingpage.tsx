@@ -1,14 +1,17 @@
 import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Preload, CameraControls } from "@react-three/drei";
+import {
+  Preload,
+  CameraControls,
+  useGLTF,
+  useProgress,
+} from "@react-three/drei";
 import Scene from "../sence/Sence";
 import { useState, useEffect, useRef } from "react";
 import Noise from "../components/Noise";
 import TextType from "../components/Texttype";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useGLTF } from "@react-three/drei";
-import { useProgress } from "@react-three/drei";
 
 interface WarningProps {
   show: boolean;
@@ -93,6 +96,7 @@ export default function Loadingpage() {
 
   return (
     <>
+      <DeviceCompatibilityWarning />
       {/* 隐形 Canvas：提前挂载 Scene，触发 Environment HDR / 纹理 / GLTF 等资源的真实加载 */}
       <div
         className="fixed -z-10 pointer-events-none"
@@ -127,7 +131,7 @@ export default function Loadingpage() {
             >
               <div className="flex flex-col items-center justify-between h-full py-8">
                 <div className="flex-1 flex flex-col items-center justify-center space-y-3 pb-4">
-                  <h1 className="dialog-text font-bold text-lg mb-2">
+                  <h1 className="dialog-text font-bold text-2xl mb-2">
                     Macintosh Portfolio
                   </h1>
 
@@ -142,7 +146,7 @@ export default function Loadingpage() {
                     ) : (
                       <TextType
                         text={["Click start to begin"]}
-                        typingSpeed={70}
+                        typingSpeed={40}
                         pauseDuration={1500}
                         showCursor={true}
                         cursorCharacter="_"
@@ -155,13 +159,12 @@ export default function Loadingpage() {
                 <button
                   className="btn btn-default hover:bg-gray-800 hover:text-white hover:shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={handleStartClick}
-                  disabled={!modelLoaded || isTransitioning} // 未加载完成或转场中禁用
                 >
                   Start
                 </button>
               </div>
 
-              <p className="dialog-text ">© 1984 Apple Computer</p>
+              <p className="dialog-text font-black ">© 1984 Apple Computer</p>
             </div>
           </div>
           <Noise
@@ -171,7 +174,6 @@ export default function Loadingpage() {
             patternRefreshInterval={2}
             patternAlpha={30}
           />
-          <DeviceCompatibilityWarning />
         </div>
       </div>
 
@@ -184,7 +186,7 @@ export default function Loadingpage() {
         >
           {/* 背景图：淡入 + 去模糊 + Ken Burns 微缩放 */}
           <motion.img
-            src="/static/transition/Transition.jpg"
+            src="/transition/Transition.jpg"
             alt="Transition"
             className="absolute inset-0 w-full h-full object-cover"
             initial={{
