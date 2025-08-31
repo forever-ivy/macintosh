@@ -1,10 +1,17 @@
+import { Suspense } from "react";
+import { Canvas } from "@react-three/fiber";
+import {
+  Preload,
+  CameraControls,
+  useGLTF,
+  useProgress,
+} from "@react-three/drei";
+import Scene from "../sence/Sence";
 import { useState, useEffect, useRef } from "react";
 import Noise from "../components/Noise";
 import TextType from "../components/Texttype";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useGLTF } from "@react-three/drei";
-import { useProgress } from "@react-three/drei";
 
 interface WarningProps {
   show: boolean;
@@ -57,10 +64,7 @@ export default function Loadingpage() {
   const navigate = useNavigate();
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [modelLoaded, setModelLoaded] = useState(false);
-  const { active, progress } = useProgress(); // 声明真实加载进度
-
-  // 用于隐形 Canvas 传递给 Scene（避免类型报错）
-  const preloadCameraRef = useRef<CameraControls>(null);
+  const [countdown, setCountdown] = useState(0);
 
   useEffect(() => {
     const audio = new Audio("/audio/startup/StartupIntelT2Mac.wav");
@@ -93,28 +97,6 @@ export default function Loadingpage() {
 
   return (
     <>
-      {/* 隐形 Canvas：提前挂载 Scene，触发 Environment HDR / 纹理 / GLTF 等资源的真实加载 */}
-      <div
-        className="fixed -z-10 pointer-events-none"
-        style={{ width: 1, height: 1, opacity: 0, left: 0, top: 0 }}
-      >
-        <Canvas
-          gl={{ antialias: false }}
-          dpr={[1, 1]}
-          camera={{ position: [-25, 16, 50], fov: 35 }}
-        >
-          <Suspense fallback={null}>
-            <Scene
-              cameraControlsRef={
-                preloadCameraRef as React.RefObject<CameraControls>
-              }
-            />
-            <Preload all />
-          </Suspense>
-        </Canvas>
-      </div>
-
-      {/* 可见的 UI */}
       <div
         className="w-full h-full flex flex-col items-center justify-center"
         color="black"
@@ -127,7 +109,7 @@ export default function Loadingpage() {
             >
               <div className="flex flex-col items-center justify-between h-full py-8">
                 <div className="flex-1 flex flex-col items-center justify-center space-y-3 pb-4">
-                  <h1 className="dialog-text font-bold text-lg mb-2">
+                  <h1 className="dialog-text font-bold text-2xl mb-2">
                     Macintosh Portfolio
                   </h1>
 
@@ -142,7 +124,7 @@ export default function Loadingpage() {
                     ) : (
                       <TextType
                         text={["Click start to begin"]}
-                        typingSpeed={70}
+                        typingSpeed={100}
                         pauseDuration={1500}
                         showCursor={true}
                         cursorCharacter="_"
@@ -155,13 +137,13 @@ export default function Loadingpage() {
                 <button
                   className="btn btn-default hover:bg-gray-800 hover:text-white hover:shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={handleStartClick}
-                  disabled={!modelLoaded || isTransitioning} // 未加载完成或转场中禁用
+                  disabled={isTransitioning}
                 >
                   Start
                 </button>
               </div>
 
-              <p className="dialog-text ">© 1984 Apple Computer</p>
+              <p className="dialog-text font-black ">© 1984 Apple Computer</p>
             </div>
           </div>
           <Noise
@@ -171,7 +153,6 @@ export default function Loadingpage() {
             patternRefreshInterval={2}
             patternAlpha={30}
           />
-          <DeviceCompatibilityWarning />
         </div>
       </div>
 
@@ -180,61 +161,9 @@ export default function Loadingpage() {
           className="fixed inset-0 z-50 overflow-hidden bg-black"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.2, ease: "easeInOut" }}
-        >
-          {/* 背景图：淡入 + 去模糊 + Ken Burns 微缩放 */}
-          <motion.img
-            src="/static/transition/Transition.jpg"
-            alt="Transition"
-            className="absolute inset-0 w-full h-full object-cover"
-            initial={{
-              scale: 1.05,
-              rotate: -0.3,
-              filter: "blur(10px) brightness(0.9)",
-              opacity: 0.0,
-            }}
-            animate={{
-              scale: 1.12,
-              rotate: 0,
-              filter: "blur(0px) brightness(1)",
-              opacity: 1,
-            }}
-            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-          />
-
-          {/* 径向暗角：从无到有，聚焦视觉中心 */}
-          <motion.div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background:
-                "radial-gradient(ellipse at center, rgba(0,0,0,0) 40%, rgba(0,0,0,0.55) 100%)",
-            }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          />
-
-          {/* 柔和高光扫过：顶部到下方的微光，用于增加层次 */}
-          <motion.div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.0) 40%)",
-            }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, ease: "easeOut", delay: 0.15 }}
-          />
-
-          {/* 最终黑场：在图片展示后淡入至黑，然后完成导航 */}
-          <motion.div
-            className="absolute inset-0 bg-black"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.8, duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-            onAnimationComplete={() => navigate("/scene")}
-          />
-        </motion.div>
+          transition={{ duration: 0.6, ease: "easeInOut" }}
+          onAnimationComplete={() => navigate("/scene")}
+        />
       )}
     </>
   );
