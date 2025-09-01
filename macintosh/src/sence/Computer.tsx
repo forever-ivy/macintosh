@@ -1,8 +1,8 @@
 import { useGLTF } from "@react-three/drei";
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, forwardRef } from "react";
 import * as THREE from "three";
 
-function ComputerModel() {
+const ComputerModel = forwardRef<THREE.Object3D>((props, ref) => {
   const gltf = useGLTF("/models/Computer/macintosh_classic_1991.glb");
 
   useEffect(() => {
@@ -17,14 +17,17 @@ function ComputerModel() {
   return (
     <primitive
       object={gltf.scene}
-      scale={10}
+      scale={8}
       position={[3, -0.1, -3]}
-      rotation={[-0.1, -Math.PI / 4, -0.07]}
+      rotation={[0, -Math.PI / 4, 0]}
+      ref={ref}
     />
   );
-}
+});
 
-export default function Computer() {
+ComputerModel.displayName = "ComputerModel";
+
+const Computer = forwardRef<THREE.Object3D>((props, ref) => {
   return (
     <Suspense
       fallback={
@@ -34,7 +37,11 @@ export default function Computer() {
         </mesh>
       }
     >
-      <ComputerModel />
+      <ComputerModel ref={ref} />
     </Suspense>
   );
-}
+});
+
+Computer.displayName = "Computer";
+
+export default Computer;

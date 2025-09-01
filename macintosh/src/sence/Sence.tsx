@@ -5,9 +5,10 @@ import {
   SpotLight,
 } from "@react-three/drei";
 import { useRef, useEffect } from "react";
-import Computer from "./Computer";
 import { gsap } from "gsap";
 import * as THREE from "three";
+import Computer from "./Computer";
+import { useNoticeStore } from "../stores/labelStore";
 
 interface SceneProps {
   cameraControlsRef: React.RefObject<CameraControls>;
@@ -16,12 +17,21 @@ interface SceneProps {
 export default function Scene({ cameraControlsRef }: SceneProps) {
   const depthBuffer = useDepthBuffer({ size: 256 });
   const spotLightRef = useRef<THREE.SpotLight>(null!);
-  const animationRef = useRef<gsap.core.Tween | null>(null);
+  const animationRef = useRef<gsap.core.Timeline | null>(null);
+  // const noticeRef = useRef<THREE.Group>(null);
+  // const labelAnimRef = useRef<gsap.core.Timeline | null>(null);
+  const mac = useRef<THREE.Object3D>(null);
+  const tl = gsap.timeline();
+  const { show } = useNoticeStore();
 
   useEffect(() => {
     if (animationRef.current) {
       animationRef.current.kill();
     }
+
+    // if (rotationRef.current) {
+    //   rotationRef.current.kill();
+    // }
 
     const curve = new THREE.CatmullRomCurve3(
       [
@@ -60,7 +70,7 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
       );
     }
 
-    animationRef.current = gsap.fromTo(
+    animationRef.current = tl.fromTo(
       animationProgress,
       { value: 0 },
       {
@@ -100,6 +110,38 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
       }
     );
 
+    if (mac.current?.rotation) {
+      tl.set(
+        {},
+        {
+          onComplete() {
+            show();
+          },
+        }
+      );
+      const rotationRef = tl.to(mac.current.rotation, {
+        y: -Math.PI / 18,
+        duration: 10,
+        ease: "none",
+        delay: 5,
+        onBegin() {
+          show();
+        },
+      });
+      rotationRef.play();
+    }
+
+    // const labelAnim = gsap.fromTo(
+    //   noticeRef.current,
+    //   { y: 100 },
+    //   {
+    //     y: 0,
+    //     duration: 0.5,
+    //     ease: "power1.out",
+    //   }
+    // );
+    // console.log(noticeRef.current);
+
     animationRef.current.play();
 
     return () => {
@@ -134,7 +176,6 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
 
       <CameraControls
         ref={cameraControlsRef}
-        // enabled={true}
         minDistance={5}
         maxDistance={30}
         infinityDolly={false}
@@ -153,7 +194,7 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
         adjustCamera={false}
         environment={{ files: "/environment/dikhololo_night_4k.hdr" }}
       >
-        <Computer />
+        <Computer ref={mac} />
       </Stage>
     </>
   );

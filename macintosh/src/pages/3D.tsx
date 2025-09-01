@@ -1,15 +1,19 @@
-import { Canvas } from "@react-three/fiber";
-import Scene from "../sence/Sence";
-import { EffectComposer, FXAA } from "@react-three/postprocessing";
-import { motion } from "framer-motion";
-import { CameraControls } from "@react-three/drei";
 import { useRef } from "react";
+import { Canvas } from "@react-three/fiber";
+import { EffectComposer, FXAA } from "@react-three/postprocessing";
+import { CameraControls } from "@react-three/drei";
+import Scene from "../sence/Sence";
+import Notice from "../components/Notice";
 
 export default function ScenePage() {
   const cameraControlsRef = useRef<CameraControls>(null);
 
   return (
-    <motion.div className="w-full h-full" exit={{ opacity: 0 }}>
+    <div className="w-full h-full bg-[#222]">
+      <Notice
+        className="fixed bottom-24 left-1/2 -translate-x-1/2 z-10"
+        message=" Click  anywhere  to  begin"
+      />
       <Canvas
         className="w-full h-full"
         gl={{ antialias: true }}
@@ -25,6 +29,6 @@ export default function ScenePage() {
           <FXAA />
         </EffectComposer>
       </Canvas>
-    </motion.div>
+    </div>
   );
 }
