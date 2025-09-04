@@ -72,6 +72,7 @@ export default function Loadingpage() {
               cameraControlsRef={
                 preloadCameraRef as React.RefObject<CameraControls>
               }
+              started={true}
             />
             <Preload all />
           </Suspense>

@@ -21,6 +21,7 @@ const ComputerModel = forwardRef<THREE.Object3D>((props, ref) => {
       position={[3, -0.1, -3]}
       rotation={[0, -Math.PI / 4, 0]}
       ref={ref}
+      castShadow={true}
     />
   );
 });

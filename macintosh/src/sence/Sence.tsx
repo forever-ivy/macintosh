@@ -12,14 +12,13 @@ import { useNoticeStore } from "../stores/labelStore";
 
 interface SceneProps {
   cameraControlsRef: React.RefObject<CameraControls>;
+  started: boolean;
 }
 
-export default function Scene({ cameraControlsRef }: SceneProps) {
+export default function Scene({ cameraControlsRef, started }: SceneProps) {
   const depthBuffer = useDepthBuffer({ size: 256 });
   const spotLightRef = useRef<THREE.SpotLight>(null!);
   const animationRef = useRef<gsap.core.Timeline | null>(null);
-  // const noticeRef = useRef<THREE.Group>(null);
-  // const labelAnimRef = useRef<gsap.core.Timeline | null>(null);
   const mac = useRef<THREE.Object3D>(null);
   const tl = gsap.timeline();
   const { show } = useNoticeStore();
@@ -28,10 +27,6 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
     if (animationRef.current) {
       animationRef.current.kill();
     }
-
-    // if (rotationRef.current) {
-    //   rotationRef.current.kill();
-    // }
 
     const curve = new THREE.CatmullRomCurve3(
       [
@@ -75,7 +70,7 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
       { value: 0 },
       {
         value: 1,
-        duration: 8,
+        duration: 0.1,
         delay: 1.5,
         ease: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         onUpdate() {
@@ -111,36 +106,38 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
     );
 
     if (mac.current?.rotation) {
+      // const vector = new THREE.Vector3();
       tl.set(
         {},
         {
           onComplete() {
             show();
+            // const position = cameraControlsRef.current.getPosition(
+            //   vector,
+            //   true
+            // );
+            // const x = position.x;
+            // const y = position.y;
+            // const z = position.z;
+            // cameraControlsRef.current.setPosition(x, y + 8.5, z, true);
+            // cameraControlsRef.current.zoomTo(4.5, true);
           },
         }
       );
-      const rotationRef = tl.to(mac.current.rotation, {
-        y: -Math.PI / 18,
-        duration: 10,
-        ease: "none",
-        delay: 5,
-        onBegin() {
-          show();
-        },
-      });
-      rotationRef.play();
-    }
 
-    // const labelAnim = gsap.fromTo(
-    //   noticeRef.current,
-    //   { y: 100 },
-    //   {
-    //     y: 0,
-    //     duration: 0.5,
-    //     ease: "power1.out",
-    //   }
-    // );
-    // console.log(noticeRef.current);
+      // tl.call(
+      //   () => {
+      //     const controls = cameraControlsRef.current;
+      //     const polarAngle = controls.polarAngle;
+      //     const azimuthAngle = controls.azimuthAngle;
+      //     if (controls) {
+      //       controls.rotateTo(azimuthAngle + Math.PI / 9, polarAngle, true);
+      //     }
+      //   },
+      //   [],
+      //   "+=5"
+      // );
+    }
 
     animationRef.current.play();
 
@@ -150,6 +147,40 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
       }
     };
   }, []);
+
+  const originalCameraPos = useRef<THREE.Vector3 | null>(null);
+  useEffect(() => {
+    const controls = cameraControlsRef.current;
+    if (!started || !controls) return;
+    const vector = new THREE.Vector3();
+    controls.getPosition(vector);
+    originalCameraPos.current = vector.clone();
+
+    controls.setPosition(vector.x, vector.y + 7.3, vector.z, true);
+    controls.zoomTo(4, true);
+    show();
+
+    const handleInteraction = () => {
+      if (originalCameraPos.current) {
+        controls.setPosition(
+          originalCameraPos.current.x,
+          originalCameraPos.current.y,
+          originalCameraPos.current.z,
+          true
+        );
+        controls.zoomTo(1, true);
+        console.log("set successfully");
+      }
+
+      controls.removeEventListener("controlstart", handleInteraction);
+    };
+
+    controls.addEventListener("controlstart", handleInteraction);
+
+    return () => {
+      controls.removeEventListener("controlstart", handleInteraction);
+    };
+  }, [started]);
 
   return (
     <>
@@ -182,7 +213,7 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
         dollySpeed={0.1}
         minPolarAngle={0}
         maxPolarAngle={Math.PI / 2}
-        smoothTime={0.25}
+        smoothTime={1}
         truck={false}
         setOrbitPoint={[2.5, 0, -2.5]}
       />
