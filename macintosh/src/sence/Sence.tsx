@@ -9,20 +9,21 @@ import { gsap } from "gsap";
 import * as THREE from "three";
 import Computer from "./Computer";
 import { useNoticeStore } from "../stores/labelStore";
+import { useClickStore } from "../stores/clickStore";
 import { moveCamera } from "../utils/cameraMove";
 
 interface SceneProps {
   cameraControlsRef: React.RefObject<CameraControls>;
-  started: boolean;
 }
 
-export default function Scene({ cameraControlsRef, started }: SceneProps) {
+export default function Scene({ cameraControlsRef }: SceneProps) {
   const depthBuffer = useDepthBuffer({ size: 256 });
   const spotLightRef = useRef<THREE.SpotLight>(null!);
   const animationRef = useRef<gsap.core.Timeline | null>(null);
   const mac = useRef<THREE.Object3D>(null);
   const tl = gsap.timeline();
   const { show } = useNoticeStore();
+  const { clicked, setClicked } = useClickStore();
 
   useEffect(() => {
     if (animationRef.current) {
@@ -153,9 +154,8 @@ export default function Scene({ cameraControlsRef, started }: SceneProps) {
   const [controlListener, setControlListener] = useState<(() => void) | null>(
     null
   );
-
   useEffect(() => {
-    if (started && !isZoomedIn) {
+    if (clicked && !isZoomedIn) {
       cameraControlsRef.current.saveState();
 
       moveCamera({ cameraControlsRef, x: 0, y: 7.3, z: 0, zoomRate: 4 });
@@ -176,12 +176,10 @@ export default function Scene({ cameraControlsRef, started }: SceneProps) {
         }
       };
     }
-  }, [started]);
+  }, [clicked]);
 
   useEffect(() => {
     if (isZoomedIn === true) {
-      console.log("zoom");
-
       if (controlListener && cameraControlsRef.current) {
         cameraControlsRef.current.removeEventListener(
           "control",
@@ -193,6 +191,7 @@ export default function Scene({ cameraControlsRef, started }: SceneProps) {
 
       setZoomedIn(false);
       setControlListener(null);
+      setClicked(!clicked);
       return;
     }
   }, [isZoomedIn, controlListener]);
