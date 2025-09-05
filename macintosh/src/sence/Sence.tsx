@@ -24,6 +24,8 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
   const tl = gsap.timeline();
   const { show } = useNoticeStore();
   const { clicked, setClicked } = useClickStore();
+  const [isRotated, setIsRotated] = useState(false);
+  const [smoothSpeed, setSmoothSpeed] = useState(10);
 
   useEffect(() => {
     if (animationRef.current) {
@@ -114,31 +116,24 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
         {
           onComplete() {
             show();
-            // const position = cameraControlsRef.current.getPosition(
-            //   vector,
-            //   true
-            // );
-            // const x = position.x;
-            // const y = position.y;
-            // const z = position.z;
-            // cameraControlsRef.current.setPosition(x, y + 8.5, z, true);
-            // cameraControlsRef.current.zoomTo(4.5, true);
           },
         }
       );
 
-      // tl.call(
-      //   () => {
-      //     const controls = cameraControlsRef.current;
-      //     const polarAngle = controls.polarAngle;
-      //     const azimuthAngle = controls.azimuthAngle;
-      //     if (controls) {
-      //       controls.rotateTo(azimuthAngle + Math.PI / 9, polarAngle, true);
-      //     }
-      //   },
-      //   [],
-      //   "+=5"
-      // );
+      tl.call(
+        () => {
+          const controls = cameraControlsRef.current;
+          const polarAngle = controls.polarAngle;
+          const azimuthAngle = controls.azimuthAngle;
+          if (controls) {
+            controls.rotateTo(azimuthAngle + Math.PI / 9, polarAngle, true);
+            setIsRotated(true);
+            setSmoothSpeed(1.5);
+          }
+        },
+        [],
+        "+=5"
+      );
     }
 
     animationRef.current.play();
@@ -156,8 +151,35 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
   );
   useEffect(() => {
     if (clicked && !isZoomedIn) {
-      cameraControlsRef.current.saveState();
+      if (isRotated === true) {
+        // 直接设置到初始位置而不是使用 reset
+        cameraControlsRef.current.setLookAt(
+          -10,
+          0,
+          10, // 初始相机位置
+          0,
+          0,
+          0, // 目标位置
+          true // 启用动画
+        );
 
+        // 等待重置完成后再进行缩放
+        setTimeout(() => {
+          cameraControlsRef.current.saveState();
+          moveCamera({ cameraControlsRef, x: 0, y: 7.3, z: 0, zoomRate: 4 });
+
+          const handleControl = () => {
+            setZoomedIn(true);
+          };
+
+          cameraControlsRef.current.addEventListener("control", handleControl);
+          setControlListener(() => handleControl);
+        }, 1000); // 等待1秒让重置动画完成
+
+        return;
+      }
+
+      cameraControlsRef.current.saveState();
       moveCamera({ cameraControlsRef, x: 0, y: 7.3, z: 0, zoomRate: 4 });
 
       const handleControl = () => {
@@ -226,7 +248,7 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
         dollySpeed={0.1}
         minPolarAngle={0}
         maxPolarAngle={Math.PI / 2}
-        smoothTime={1}
+        smoothTime={smoothSpeed}
         truck={false}
         setOrbitPoint={[2.5, 0, -2.5]}
       />
