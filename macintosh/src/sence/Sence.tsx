@@ -4,11 +4,12 @@ import {
   useDepthBuffer,
   SpotLight,
 } from "@react-three/drei";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
 import * as THREE from "three";
 import Computer from "./Computer";
 import { useNoticeStore } from "../stores/labelStore";
+import { moveCamera } from "../utils/cameraMove";
 
 interface SceneProps {
   cameraControlsRef: React.RefObject<CameraControls>;
@@ -70,7 +71,7 @@ export default function Scene({ cameraControlsRef, started }: SceneProps) {
       { value: 0 },
       {
         value: 1,
-        duration: 0.1,
+        duration: 10,
         delay: 1.5,
         ease: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         onUpdate() {
@@ -148,44 +149,57 @@ export default function Scene({ cameraControlsRef, started }: SceneProps) {
     };
   }, []);
 
-  const originalCameraPos = useRef<THREE.Vector3 | null>(null);
+  const [isZoomedIn, setZoomedIn] = useState(false);
+  const [controlListener, setControlListener] = useState<(() => void) | null>(
+    null
+  );
+
   useEffect(() => {
-    const controls = cameraControlsRef.current;
-    if (!started || !controls) return;
-    const vector = new THREE.Vector3();
-    controls.getPosition(vector);
-    originalCameraPos.current = vector.clone();
+    if (started && !isZoomedIn) {
+      cameraControlsRef.current.saveState();
 
-    controls.setPosition(vector.x, vector.y + 7.3, vector.z, true);
-    controls.zoomTo(4, true);
-    show();
+      moveCamera({ cameraControlsRef, x: 0, y: 7.3, z: 0, zoomRate: 4 });
 
-    const handleInteraction = () => {
-      if (originalCameraPos.current) {
-        controls.setPosition(
-          originalCameraPos.current.x,
-          originalCameraPos.current.y,
-          originalCameraPos.current.z,
-          true
+      const handleControl = () => {
+        setZoomedIn(true);
+      };
+
+      cameraControlsRef.current.addEventListener("control", handleControl);
+      setControlListener(() => handleControl);
+
+      return () => {
+        if (cameraControlsRef.current) {
+          cameraControlsRef.current.removeEventListener(
+            "control",
+            handleControl
+          );
+        }
+      };
+    }
+  }, [started]);
+
+  useEffect(() => {
+    if (isZoomedIn === true) {
+      console.log("zoom");
+
+      if (controlListener && cameraControlsRef.current) {
+        cameraControlsRef.current.removeEventListener(
+          "control",
+          controlListener
         );
-        controls.zoomTo(1, true);
-        console.log("set successfully");
       }
 
-      controls.removeEventListener("controlstart", handleInteraction);
-    };
+      cameraControlsRef.current.reset(true);
 
-    controls.addEventListener("controlstart", handleInteraction);
-
-    return () => {
-      controls.removeEventListener("controlstart", handleInteraction);
-    };
-  }, [started]);
+      setZoomedIn(false);
+      setControlListener(null);
+      return;
+    }
+  }, [isZoomedIn, controlListener]);
 
   return (
     <>
       <color attach="background" args={["#222"]} />
-
       <SpotLight
         ref={spotLightRef}
         position={[-10, 25, -0.5]}
