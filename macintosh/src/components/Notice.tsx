@@ -4,9 +4,14 @@ import { useNoticeStore } from "../stores/labelStore";
 interface NoticeProps {
   className?: string;
   message: string;
+  cursorCharacter?: string;
 }
 
-export default function Notice({ className, message }: NoticeProps) {
+export default function Notice({
+  className,
+  message,
+  cursorCharacter,
+}: NoticeProps) {
   const { visible } = useNoticeStore();
 
   if (visible === false) return null;
@@ -17,7 +22,7 @@ export default function Notice({ className, message }: NoticeProps) {
         className={`w-fit h-fit px-3 py-2 
           bg-white/5 backdrop-blur-md backdrop-saturate-150
           text-white/90 ring-1 ring-white/10
-          shadow-lg shadow-black/40
+          shadow-lg shadow-black/40 
           ${className}`}
       >
         <TextType
@@ -25,7 +30,7 @@ export default function Notice({ className, message }: NoticeProps) {
           typingSpeed={100}
           pauseDuration={1500}
           showCursor={true}
-          cursorCharacter="_"
+          cursorCharacter={cursorCharacter}
           textColors={["white"]}
           className=" font-bold text-xl"
         />

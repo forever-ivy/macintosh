@@ -6,6 +6,7 @@ import { useClickStore } from "../stores/clickStore";
 import { useNoticeStore } from "../stores/labelStore";
 import Scene from "../sence/Sence";
 import Notice from "../components/Notice";
+import TittleBar from "../ui/tittleBar";
 
 export default function ScenePage() {
   const cameraControlsRef = useRef<CameraControls>(null);
@@ -22,7 +23,9 @@ export default function ScenePage() {
       <Notice
         className="fixed bottom-24 left-1/2 -translate-x-1/2 z-10"
         message=" Click  anywhere  to  begin"
+        cursorCharacter="_"
       />
+      <TittleBar className="fixed top-12 left-12 z-10" />
 
       <Canvas
         className="w-full h-full"
