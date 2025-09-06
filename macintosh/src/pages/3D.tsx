@@ -54,16 +54,16 @@ export default function ScenePage() {
   }, [isPlaying]);
 
   return (
-    <div className="w-full h-full bg-[#222]" onClick={handleClick}>
+    <div className="w-full h-full bg-[#222]">
+      {" "}
       {visible && (
         <Notice
           className="fixed bottom-24 left-1/2 -translate-x-1/2 z-10"
-          message=" Click  anywhere  to  begin"
+          message=" Click  Macintosh  to  begin"
           cursorCharacter="_"
         />
       )}
       <TittleBar className="fixed top-12 left-12 z-10" />
-
       <Canvas
         className="w-full h-full"
         gl={{ antialias: true }}
@@ -74,6 +74,7 @@ export default function ScenePage() {
           cameraControlsRef={
             cameraControlsRef as React.RefObject<CameraControls>
           }
+          onModelClick={handleClick}
         />
         <EffectComposer>
           <FXAA />

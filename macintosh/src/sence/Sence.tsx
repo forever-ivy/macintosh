@@ -16,9 +16,10 @@ import { useControlBGMStore } from "../stores/controlbgmStore";
 
 interface SceneProps {
   cameraControlsRef: React.RefObject<CameraControls>;
+  onModelClick?: () => void;
 }
 
-export default function Scene({ cameraControlsRef }: SceneProps) {
+export default function Scene({ cameraControlsRef, onModelClick }: SceneProps) {
   const depthBuffer = useDepthBuffer({ size: 256 });
   const spotLightRef = useRef<THREE.SpotLight>(null!);
   const animationRef = useRef<gsap.core.Timeline | null>(null);
@@ -29,7 +30,6 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
   const { show } = useNoticeStore();
   const { clicked, setClicked } = useClickStore();
   const [isRotated, setIsRotated] = useState(false);
-  const [smoothSpeed, setSmoothSpeed] = useState(15);
 
   useEffect(() => {
     if (animationRef.current) {
@@ -131,13 +131,19 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
           const polarAngle = controls.polarAngle;
           const azimuthAngle = controls.azimuthAngle;
           if (controls) {
+            controls.smoothTime = 12;
+            const handleRest = () => {
+              controls.smoothTime = 1.5;
+              controls.removeEventListener("rest", handleRest);
+            };
+            controls.addEventListener("rest", handleRest);
+
             controls.rotateTo(azimuthAngle + Math.PI / 9, polarAngle, true);
             setIsRotated(true);
-            setSmoothSpeed(1.5);
           }
         },
         [],
-        "+=5"
+        "+=10"
       );
     }
 
@@ -254,7 +260,7 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
         dollySpeed={0.1}
         minPolarAngle={0}
         maxPolarAngle={Math.PI / 2}
-        smoothTime={smoothSpeed}
+        smoothTime={10}
         truck={false}
         setOrbitPoint={[2.5, 0, -2.5]}
       />
@@ -266,7 +272,7 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
         adjustCamera={false}
         environment={{ files: "/environment/dikhololo_night_4k.hdr" }}
       >
-        <Computer ref={mac} />
+        <Computer ref={mac} onModelClick={onModelClick} /> {/* 传递点击事件 */}
       </Stage>
     </>
   );
