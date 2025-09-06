@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { useTimeStore } from "../stores/timeStore";
+import type { ForwardedRef } from "react";
 
 interface TimeDisplayProps {
   className?: string;
+  ref?: ForwardedRef<HTMLDivElement>;
 }
-export default function TimeDisplay({ className }: TimeDisplayProps) {
+export default function TimeDisplay({ className, ref }: TimeDisplayProps) {
   const currentTime = useTimeStore((state) => state.currentTime);
   const [initialTime] = useState(currentTime);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -81,7 +83,7 @@ export default function TimeDisplay({ className }: TimeDisplayProps) {
   }, []);
 
   return (
-    <div className={`flex items-center space-x-2 ${className} `}>
+    <div className={`flex items-center space-x-2 ${className} `} ref={ref}>
       <div
         ref={containerRef}
         className="h-fit px-3 py-2 bg-white/5 backdrop-blur-md backdrop-saturate-150 text-white/90 ring-1 ring-white/10 shadow-lg shadow-black/40 overflow-hidden rounded"

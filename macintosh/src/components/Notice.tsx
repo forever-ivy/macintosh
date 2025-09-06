@@ -1,18 +1,21 @@
 import TextType from "./Texttype";
+import type { ForwardedRef } from "react";
 
 interface NoticeProps {
   className?: string;
   message: string;
   cursorCharacter?: string;
+  ref?: ForwardedRef<HTMLDivElement>;
 }
 
 export default function Notice({
   className,
   message,
   cursorCharacter,
+  ref,
 }: NoticeProps) {
   return (
-    <div>
+    <div ref={ref}>
       <div
         className={`w-fit h-fit px-3 py-2 
           bg-white/5 backdrop-blur-md backdrop-saturate-150

@@ -32,7 +32,6 @@ export const useTimeStore = create<TimeState>((set, get) => ({
 
     const update = () => {
       const newTime = updateTime();
-      console.log("时间更新:", newTime); // 调试日志
       set({ currentTime: newTime });
     };
 
