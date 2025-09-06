@@ -1,5 +1,4 @@
 import TextType from "./Texttype";
-import { useNoticeStore } from "../stores/labelStore";
 
 interface NoticeProps {
   className?: string;
@@ -12,10 +11,6 @@ export default function Notice({
   message,
   cursorCharacter,
 }: NoticeProps) {
-  const { visible } = useNoticeStore();
-
-  if (visible === false) return null;
-
   return (
     <div>
       <div

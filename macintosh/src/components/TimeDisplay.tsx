@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { useTimeStore } from "../stores/timeStore";
-import { useNoticeStore } from "../stores/labelStore";
 
 interface TimeDisplayProps {
   className?: string;
@@ -12,12 +11,15 @@ export default function TimeDisplay({ className }: TimeDisplayProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);
-  const { visible } = useNoticeStore();
-  const ifVisible = visible ? "visible" : "hidden";
+  const volumeRef = useRef<HTMLDivElement>(null);
+  const cameraRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!containerRef.current || !textRef.current) return;
     const container = containerRef.current;
     const text = textRef.current;
+    const volume = volumeRef.current;
+    const camera = cameraRef.current;
 
     // 初始状态：容器宽度为0，文字透明
     gsap.set(container, {
@@ -25,6 +27,12 @@ export default function TimeDisplay({ className }: TimeDisplayProps) {
       opacity: 0,
     });
     gsap.set(text, {
+      opacity: 0,
+    });
+    gsap.set(volume, {
+      opacity: 0,
+    });
+    gsap.set(camera, {
       opacity: 0,
     });
 
@@ -55,7 +63,17 @@ export default function TimeDisplay({ className }: TimeDisplayProps) {
           ease: "power2.out",
         },
         "-=0.3"
-      );
+      )
+      .to(volume, {
+        opacity: 1,
+        duration: 0.3,
+        ease: "power2.out",
+      })
+      .to(camera, {
+        opacity: 1,
+        duration: 0.3,
+        ease: "power2.out",
+      });
 
     return () => {
       tl.kill();
@@ -63,13 +81,30 @@ export default function TimeDisplay({ className }: TimeDisplayProps) {
   }, []);
 
   return (
-    <div
-      ref={containerRef}
-      className={`h-fit px-3 py-2  bg-white/5 backdrop-blur-md backdrop-saturate-150 text-white/90 ring-1 ring-white/10 shadow-lg shadow-black/40 overflow-hidden ${className} ${ifVisible}`}
-    >
-      <span ref={textRef} className="font-bold text-xl whitespace-nowrap">
-        {isExpanded ? currentTime : initialTime}
-      </span>
+    <div className={`flex items-center space-x-2 ${className} `}>
+      <div
+        ref={containerRef}
+        className="h-fit px-3 py-2 bg-white/5 backdrop-blur-md backdrop-saturate-150 text-white/90 ring-1 ring-white/10 shadow-lg shadow-black/40 overflow-hidden rounded"
+      >
+        <span
+          ref={textRef}
+          className="font-bold text-xl whitespace-nowrap tabular-nums"
+        >
+          {isExpanded ? currentTime : initialTime}
+        </span>
+      </div>
+      <div
+        className="bg-white/5 backdrop-blur-md backdrop-saturate-150 ring-1 ring-white/10 shadow-lg shadow-black/40 p-2 rounded"
+        ref={volumeRef}
+      >
+        <img src="/textures/UI/volume_on.svg" className="size-6" />
+      </div>
+      <div
+        className="bg-white/5 backdrop-blur-md backdrop-saturate-150 ring-1 ring-white/10 shadow-lg shadow-black/40 p-2 rounded"
+        ref={cameraRef}
+      >
+        <img src="/textures/UI/camera.svg" className="size-6" />
+      </div>
     </div>
   );
 }

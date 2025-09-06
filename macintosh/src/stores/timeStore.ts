@@ -12,8 +12,8 @@ let intervalTimer: number | null = null;
 
 const updateTime = () => {
   const now = new Date();
-  return now.toLocaleTimeString("zh-CN", {
-    hour12: false,
+  return now.toLocaleTimeString("en-US", {
+    hour12: true,
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",

@@ -110,7 +110,6 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
     );
 
     if (mac.current?.rotation) {
-      // const vector = new THREE.Vector3();
       tl.set(
         {},
         {
