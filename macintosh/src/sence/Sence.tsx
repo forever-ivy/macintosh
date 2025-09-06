@@ -272,7 +272,7 @@ export default function Scene({ cameraControlsRef, onModelClick }: SceneProps) {
         adjustCamera={false}
         environment={{ files: "/environment/dikhololo_night_4k.hdr" }}
       >
-        <Computer ref={mac} onModelClick={onModelClick} /> {/* 传递点击事件 */}
+        <Computer ref={mac} onModelClick={onModelClick} />
       </Stage>
     </>
   );
