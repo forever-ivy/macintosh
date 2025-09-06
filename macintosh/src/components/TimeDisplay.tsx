@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { useTimeStore } from "../stores/timeStore";
 import type { ForwardedRef } from "react";
+import { useControlBGMStore } from "../stores/controlbgmStore";
 
 interface TimeDisplayProps {
   className?: string;
@@ -15,6 +16,8 @@ export default function TimeDisplay({ className, ref }: TimeDisplayProps) {
   const textRef = useRef<HTMLSpanElement>(null);
   const volumeRef = useRef<HTMLDivElement>(null);
   const cameraRef = useRef<HTMLDivElement>(null);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const { play, pause } = useControlBGMStore();
 
   useEffect(() => {
     if (!containerRef.current || !textRef.current) return;
@@ -98,12 +101,25 @@ export default function TimeDisplay({ className, ref }: TimeDisplayProps) {
       <div
         className="bg-white/5 backdrop-blur-md backdrop-saturate-150 ring-1 ring-white/10 shadow-lg shadow-black/40 p-2 rounded"
         ref={volumeRef}
+        onClick={() => {
+          if (isPlaying === true) {
+            pause();
+          } else {
+            play();
+          }
+          setIsPlaying(!isPlaying);
+        }}
       >
-        <img src="/textures/UI/volume_on.svg" className="size-6" />
+        {isPlaying ? (
+          <img src="/textures/UI/volume_on.svg" className="size-6" />
+        ) : (
+          <img src="/textures/UI/volume_off.svg" className="size-6" />
+        )}
       </div>
       <div
         className="bg-white/5 backdrop-blur-md backdrop-saturate-150 ring-1 ring-white/10 shadow-lg shadow-black/40 p-2 rounded"
         ref={cameraRef}
+        onClick={() => {}}
       >
         <img src="/textures/UI/camera.svg" className="size-6" />
       </div>

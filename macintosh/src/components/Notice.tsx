@@ -6,6 +6,7 @@ interface NoticeProps {
   message: string;
   cursorCharacter?: string;
   ref?: ForwardedRef<HTMLDivElement>;
+  enableTypingSound?: boolean;
 }
 
 export default function Notice({
@@ -13,6 +14,7 @@ export default function Notice({
   message,
   cursorCharacter,
   ref,
+  enableTypingSound = true,
 }: NoticeProps) {
   return (
     <div ref={ref}>
@@ -31,6 +33,9 @@ export default function Notice({
           cursorCharacter={cursorCharacter}
           textColors={["white"]}
           className=" font-bold text-xl"
+          enableTypingSound={enableTypingSound}
+          typingSoundUrl="/static/audio/cc/type.wav"
+          typingSoundVolume={0.3}
         />
       </div>
     </div>

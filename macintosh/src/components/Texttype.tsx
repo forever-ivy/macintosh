@@ -29,6 +29,10 @@ interface TextTypeProps {
   onSentenceComplete?: (sentence: string, index: number) => void;
   startOnVisible?: boolean;
   reverseMode?: boolean;
+  // 新增音效相关 props
+  enableTypingSound?: boolean;
+  typingSoundUrl?: string;
+  typingSoundVolume?: number;
 }
 
 const TextType = ({
@@ -50,6 +54,10 @@ const TextType = ({
   onSentenceComplete,
   startOnVisible = false,
   reverseMode = false,
+  // 新增音效相关默认值
+  enableTypingSound = false,
+  typingSoundUrl = "/static/audio/cc/type.wav",
+  typingSoundVolume = 1,
   ...props
 }: TextTypeProps & React.HTMLAttributes<HTMLElement>) => {
   const [displayedText, setDisplayedText] = useState("");
@@ -59,11 +67,39 @@ const TextType = ({
   const [isVisible, setIsVisible] = useState(!startOnVisible);
   const cursorRef = useRef<HTMLSpanElement>(null);
   const containerRef = useRef<HTMLElement>(null);
+  // 新增音效 ref
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const textArray = useMemo(
     () => (Array.isArray(text) ? text : [text]),
     [text]
   );
+
+  // 初始化音效
+  useEffect(() => {
+    if (enableTypingSound && typingSoundUrl) {
+      audioRef.current = new Audio(typingSoundUrl);
+      audioRef.current.volume = typingSoundVolume;
+      audioRef.current.preload = "auto";
+    }
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current = null;
+      }
+    };
+  }, [enableTypingSound, typingSoundUrl, typingSoundVolume]);
+
+  // 播放打字音效的函数
+  const playTypingSound = useCallback(() => {
+    if (enableTypingSound && audioRef.current) {
+      // 重置音频到开始位置以支持快速连续播放
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(() => {
+        // 忽略播放错误（比如用户还没有交互过页面）
+      });
+    }
+  }, [enableTypingSound]);
 
   const getRandomSpeed = useCallback(() => {
     if (!variableSpeed) return typingSpeed;
@@ -141,6 +177,8 @@ const TextType = ({
         if (currentCharIndex < processedText.length) {
           timeout = setTimeout(
             () => {
+              // 在添加字符时播放音效
+              playTypingSound();
               setDisplayedText(
                 (prev) => prev + processedText[currentCharIndex]
               );
@@ -178,6 +216,7 @@ const TextType = ({
     reverseMode,
     variableSpeed,
     onSentenceComplete,
+    playTypingSound,
   ]);
 
   const shouldHideCursor =

@@ -1,9 +1,11 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { EffectComposer, FXAA } from "@react-three/postprocessing";
+import { Howl } from "howler";
 import { CameraControls } from "@react-three/drei";
 import { useClickStore } from "../stores/clickStore";
 import { useNoticeStore } from "../stores/labelStore";
+import { useControlBGMStore } from "../stores/controlbgmStore";
 import Scene from "../sence/Sence";
 import Notice from "../components/Notice";
 import TittleBar from "../ui/tittleBar";
@@ -11,12 +13,36 @@ import TittleBar from "../ui/tittleBar";
 export default function ScenePage() {
   const cameraControlsRef = useRef<CameraControls>(null);
   const { clicked, setClicked } = useClickStore();
+  const { isPlaying } = useControlBGMStore();
   const { hide, visible } = useNoticeStore();
 
   const handleClick = () => {
     setClicked(!clicked);
     hide();
   };
+
+  useEffect(() => {
+    const BGM = new Howl({
+      src: ["/audio/atmosphere/office.mp3"],
+      loop: true,
+      volume: 0.2,
+      preload: true,
+      html5: false, // 使用 Web Audio API
+    });
+
+    // 播放音频
+    if (isPlaying === true) {
+      BGM.play();
+    } else {
+      BGM.pause();
+    }
+
+    // 清理函数
+    return () => {
+      BGM.stop();
+      BGM.unload();
+    };
+  }, [isPlaying]);
 
   return (
     <div className="w-full h-full bg-[#222]" onClick={handleClick}>
