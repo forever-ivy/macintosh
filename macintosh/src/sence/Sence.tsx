@@ -29,7 +29,7 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
   const { show } = useNoticeStore();
   const { clicked, setClicked } = useClickStore();
   const [isRotated, setIsRotated] = useState(false);
-  const [smoothSpeed, setSmoothSpeed] = useState(10);
+  const [smoothSpeed, setSmoothSpeed] = useState(15);
 
   useEffect(() => {
     if (animationRef.current) {

@@ -16,8 +16,8 @@ export default function TimeDisplay({ className, ref }: TimeDisplayProps) {
   const textRef = useRef<HTMLSpanElement>(null);
   const volumeRef = useRef<HTMLDivElement>(null);
   const cameraRef = useRef<HTMLDivElement>(null);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const { play, pause } = useControlBGMStore();
+  // 使用全局状态而不是本地状态
+  const { isPlaying, play, pause } = useControlBGMStore();
 
   useEffect(() => {
     if (!containerRef.current || !textRef.current) return;
@@ -102,12 +102,11 @@ export default function TimeDisplay({ className, ref }: TimeDisplayProps) {
         className="bg-white/5 backdrop-blur-md backdrop-saturate-150 ring-1 ring-white/10 shadow-lg shadow-black/40 p-2 rounded"
         ref={volumeRef}
         onClick={() => {
-          if (isPlaying === true) {
+          if (isPlaying) {
             pause();
           } else {
             play();
           }
-          setIsPlaying(!isPlaying);
         }}
       >
         {isPlaying ? (
