@@ -7,7 +7,7 @@ interface ControlBGMState {
 }
 
 export const useControlBGMStore = create<ControlBGMState>((set) => ({
-  isPlaying: true,
+  isPlaying: false,
   play: () => set({ isPlaying: true }),
   pause: () => set({ isPlaying: false }),
 }));

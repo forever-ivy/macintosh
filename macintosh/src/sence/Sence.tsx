@@ -11,6 +11,8 @@ import Computer from "./Computer";
 import { useNoticeStore } from "../stores/labelStore";
 import { useClickStore } from "../stores/clickStore";
 import { moveCamera } from "../utils/cameraMove";
+import { useControlTittlebarStore } from "../stores/controltittlebarStore";
+import { useControlBGMStore } from "../stores/controlbgmStore";
 
 interface SceneProps {
   cameraControlsRef: React.RefObject<CameraControls>;
@@ -22,6 +24,8 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
   const animationRef = useRef<gsap.core.Timeline | null>(null);
   const mac = useRef<THREE.Object3D>(null);
   const tl = gsap.timeline();
+  const { BarShow } = useControlTittlebarStore();
+  const { play } = useControlBGMStore();
   const { show } = useNoticeStore();
   const { clicked, setClicked } = useClickStore();
   const [isRotated, setIsRotated] = useState(false);
@@ -115,6 +119,8 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
         {
           onComplete() {
             show();
+            BarShow();
+            play();
           },
         }
       );
@@ -213,6 +219,7 @@ export default function Scene({ cameraControlsRef }: SceneProps) {
       setZoomedIn(false);
       setControlListener(null);
       setClicked(!clicked);
+      BarShow();
       return;
     }
   }, [isZoomedIn, controlListener]);

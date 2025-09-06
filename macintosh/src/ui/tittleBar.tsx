@@ -1,12 +1,15 @@
 import Notice from "../components/Notice";
 import TimeDisplay from "../components/TimeDisplay";
 import { useRef, useState, useEffect } from "react";
+import { useControlTittlebarStore } from "../stores/controltittlebarStore";
 
 interface TittleBarProps {
   className?: string;
 }
 
 export default function TittleBar({ className }: TittleBarProps) {
+  const { isVisible } = useControlTittlebarStore();
+
   const noticeRef1 = useRef<HTMLDivElement>(null);
   const noticeRef2 = useRef<HTMLDivElement>(null);
   const noticeRef3 = useRef<HTMLDivElement>(null);
@@ -22,6 +25,9 @@ export default function TittleBar({ className }: TittleBarProps) {
     return () => timers.forEach(clearTimeout);
   }, []);
 
+  if (isVisible === false) {
+    return null;
+  }
   return (
     <div className={`flex flex-col space-y-2 ${className}`}>
       <Notice

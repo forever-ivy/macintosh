@@ -56,7 +56,7 @@ const TextType = ({
   reverseMode = false,
   // 新增音效相关默认值
   enableTypingSound = false,
-  typingSoundUrl = "/static/audio/cc/type.wav",
+  typingSoundUrl = "/audio/cc/type.wav",
   typingSoundVolume = 1,
   ...props
 }: TextTypeProps & React.HTMLAttributes<HTMLElement>) => {
