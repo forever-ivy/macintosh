@@ -80,8 +80,8 @@ export default function Scene({ cameraControlsRef, onModelClick }: SceneProps) {
       { value: 0 },
       {
         value: 1,
-        duration: 0.1,
-        delay: 0,
+        duration: 10,
+        delay: 1.5,
         ease: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         onUpdate() {
           const value = animationProgress.value;

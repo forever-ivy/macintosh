@@ -7,6 +7,7 @@ import { useClickStore } from "../stores/clickStore";
 import { useNoticeStore } from "../stores/labelStore";
 import { useControlBGMStore } from "../stores/controlbgmStore";
 import { useControlTittlebarStore } from "../stores/controltittlebarStore";
+import { useCameraRotateControlStore } from "../stores/camerarotatecontrolStore";
 import Scene from "../sence/Sence";
 import Notice from "../components/Notice";
 import TittleBar from "../ui/tittleBar";
@@ -17,11 +18,16 @@ export default function ScenePage() {
   const { isPlaying } = useControlBGMStore();
   const { hide, visible } = useNoticeStore();
   const { BarHide } = useControlTittlebarStore();
+  const { isRotate } = useCameraRotateControlStore();
 
   const handleClick = () => {
-    setClicked(!clicked);
-    hide();
-    BarHide();
+    if (isRotate === true) {
+      setClicked(!clicked);
+      hide();
+      BarHide();
+    } else {
+      setClicked(!clicked);
+    }
   };
 
   useEffect(() => {

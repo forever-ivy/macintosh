@@ -4,6 +4,7 @@ import { useTimeStore } from "../stores/timeStore";
 import type { ForwardedRef } from "react";
 import { useControlBGMStore } from "../stores/controlbgmStore";
 import { useCameraRotateControlStore } from "../stores/camerarotatecontrolStore";
+import { useNoticeStore } from "../stores/labelStore";
 
 interface TimeDisplayProps {
   className?: string;
@@ -19,6 +20,7 @@ export default function TimeDisplay({ className, ref }: TimeDisplayProps) {
   const cameraRef = useRef<HTMLDivElement>(null);
   const { isPlaying, play, pause } = useControlBGMStore();
   const { isRotate, setIsRotate } = useCameraRotateControlStore();
+  const { hide, show } = useNoticeStore();
 
   useEffect(() => {
     if (!containerRef.current || !textRef.current) return;
@@ -121,6 +123,11 @@ export default function TimeDisplay({ className, ref }: TimeDisplayProps) {
         ref={cameraRef}
         onClick={() => {
           setIsRotate(!isRotate);
+          if (isRotate === true) {
+            hide();
+          } else {
+            show();
+          }
         }}
       >
         {isRotate ? (
