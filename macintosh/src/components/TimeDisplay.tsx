@@ -3,6 +3,7 @@ import { gsap } from "gsap";
 import { useTimeStore } from "../stores/timeStore";
 import type { ForwardedRef } from "react";
 import { useControlBGMStore } from "../stores/controlbgmStore";
+import { useCameraRotateControlStore } from "../stores/camerarotatecontrolStore";
 
 interface TimeDisplayProps {
   className?: string;
@@ -16,8 +17,8 @@ export default function TimeDisplay({ className, ref }: TimeDisplayProps) {
   const textRef = useRef<HTMLSpanElement>(null);
   const volumeRef = useRef<HTMLDivElement>(null);
   const cameraRef = useRef<HTMLDivElement>(null);
-  // 使用全局状态而不是本地状态
   const { isPlaying, play, pause } = useControlBGMStore();
+  const { isRotate, setIsRotate } = useCameraRotateControlStore();
 
   useEffect(() => {
     if (!containerRef.current || !textRef.current) return;
@@ -118,9 +119,15 @@ export default function TimeDisplay({ className, ref }: TimeDisplayProps) {
       <div
         className="bg-white/5 backdrop-blur-md backdrop-saturate-150 ring-1 ring-white/10 shadow-lg shadow-black/40 p-2 rounded"
         ref={cameraRef}
-        onClick={() => {}}
+        onClick={() => {
+          setIsRotate(!isRotate);
+        }}
       >
-        <img src="/textures/UI/camera.svg" className="size-6" />
+        {isRotate ? (
+          <img src="/textures/UI/camera.svg" className="size-6" />
+        ) : (
+          <img src="/textures/UI/mouse.svg" className="size-6" />
+        )}
       </div>
     </div>
   );

@@ -13,6 +13,7 @@ import { useClickStore } from "../stores/clickStore";
 import { moveCamera } from "../utils/cameraMove";
 import { useControlTittlebarStore } from "../stores/controltittlebarStore";
 import { useControlBGMStore } from "../stores/controlbgmStore";
+import { useCameraRotateControlStore } from "../stores/camerarotatecontrolStore";
 
 interface SceneProps {
   cameraControlsRef: React.RefObject<CameraControls>;
@@ -28,6 +29,7 @@ export default function Scene({ cameraControlsRef, onModelClick }: SceneProps) {
   const { BarShow } = useControlTittlebarStore();
   const { play } = useControlBGMStore();
   const { show } = useNoticeStore();
+  const { isRotate } = useCameraRotateControlStore();
   const { clicked, setClicked } = useClickStore();
   const [isRotated, setIsRotated] = useState(false);
 
@@ -157,8 +159,9 @@ export default function Scene({ cameraControlsRef, onModelClick }: SceneProps) {
   const [controlListener, setControlListener] = useState<(() => void) | null>(
     null
   );
+
   useEffect(() => {
-    if (clicked && !isZoomedIn) {
+    if (clicked && !isZoomedIn && isRotate === true) {
       if (isRotated === true) {
         // 直接设置到初始位置而不是使用 reset
         cameraControlsRef.current.smoothTime = 1.5;
@@ -213,7 +216,7 @@ export default function Scene({ cameraControlsRef, onModelClick }: SceneProps) {
   }, [clicked]);
 
   useEffect(() => {
-    if (isZoomedIn === true) {
+    if (isZoomedIn === true && isRotate === true) {
       cameraControlsRef.current.smoothTime = 1.5;
       if (controlListener && cameraControlsRef.current) {
         cameraControlsRef.current.removeEventListener(

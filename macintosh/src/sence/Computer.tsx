@@ -2,6 +2,7 @@ import { useGLTF, Html } from "@react-three/drei";
 import { Suspense, useEffect, forwardRef, type ReactNode } from "react";
 import * as THREE from "three";
 import type { ThreeEvent } from "@react-three/fiber";
+import { useControls } from "leva";
 
 interface ComputerProps {
   onModelClick?: () => void;
@@ -17,6 +18,7 @@ const ComputerModel = forwardRef<THREE.Object3D, ComputerProps>(
         if (child instanceof THREE.Mesh) {
           child.geometry.computeVertexNormals();
           child.material.flatShading = false;
+          // child.material.wireframe = true;
         }
       });
     }, [gltf]);
@@ -45,14 +47,17 @@ ComputerModel.displayName = "ComputerModel";
 
 const Computer = forwardRef<THREE.Object3D, ComputerProps>(
   ({ onModelClick }, ref) => {
-    // 在 iframe 中使用
-    <iframe
-      src="https://localhost:3000"
-      title="YouTube video player"
-      frameBorder={0}
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowFullScreen
-    />;
+    // Leva 控制器
+    const { positionX, positionY, positionZ, rotationX, rotationY, rotationZ } =
+      useControls("Html Screen Position & Rotation", {
+        positionX: { value: 1.93, min: -5, max: 5, step: 0.01 },
+        positionY: { value: 0.73, min: -5, max: 5, step: 0.01 },
+        positionZ: { value: -1.96, min: -5, max: 5, step: 0.01 },
+        rotationX: { value: -0.1, min: -Math.PI, max: Math.PI, step: 0.01 },
+        rotationY: { value: -0.78, min: -Math.PI, max: Math.PI, step: 0.01 },
+        rotationZ: { value: -0.08, min: -Math.PI, max: Math.PI, step: 0.01 },
+      });
+
     return (
       <Suspense
         fallback={
@@ -64,27 +69,17 @@ const Computer = forwardRef<THREE.Object3D, ComputerProps>(
       >
         <ComputerModel ref={ref} onModelClick={onModelClick}>
           <Html
-            position={[1.93, 0.73, -1.96]}
-            rotation={[-0.1, -0.78, -0.08]}
+            position={[positionX, positionY, positionZ]}
+            rotation={[rotationX, rotationY, rotationZ]}
             transform
             occlude
-            style={{
-              pointerEvents: "none",
-              userSelect: "none",
-              color: "white",
-              fontSize: "14px",
-              textAlign: "center",
-            }}
+            distanceFactor={1.5}
           >
             <iframe
               src="https://localhost:3000"
-              title="YouTube video player"
-              frameBorder={0}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
               style={{
-                width: 114,
-                height: 90,
+                width: 730,
+                height: 530,
                 borderRadius: "4px",
               }}
             />
