@@ -132,12 +132,9 @@ export default function Scene({ cameraControlsRef, onModelClick }: SceneProps) {
           const azimuthAngle = controls.azimuthAngle;
           if (controls) {
             controls.smoothTime = 12;
-            const handleRest = () => {
-              controls.smoothTime = 1.5;
-              controls.removeEventListener("rest", handleRest);
-            };
-            controls.addEventListener("rest", handleRest);
-
+            if (controls.smoothTime === 12) {
+              console.log("12");
+            }
             controls.rotateTo(azimuthAngle + Math.PI / 9, polarAngle, true);
             setIsRotated(true);
           }
@@ -164,6 +161,7 @@ export default function Scene({ cameraControlsRef, onModelClick }: SceneProps) {
     if (clicked && !isZoomedIn) {
       if (isRotated === true) {
         // 直接设置到初始位置而不是使用 reset
+        cameraControlsRef.current.smoothTime = 1.5;
         cameraControlsRef.current.setLookAt(
           -10,
           0,
@@ -174,54 +172,56 @@ export default function Scene({ cameraControlsRef, onModelClick }: SceneProps) {
           true // 启用动画
         );
 
-        // 等待重置完成后再进行缩放
-        setTimeout(() => {
-          cameraControlsRef.current.saveState();
+        // 用 rest 事件替代 setTimeout，确保在相机真正停止后再保存状态
+        const controls = cameraControlsRef.current;
+        const onRestAfterReset = () => {
+          controls.removeEventListener("rest", onRestAfterReset); // 一次性监听
+          controls.saveState(); // 在稳定终点保存
           moveCamera({ cameraControlsRef, x: 0, y: 7.3, z: 0, zoomRate: 4 });
 
+          // 保持你原有的 control 监听逻辑不变
           const handleControl = () => {
             setZoomedIn(true);
           };
-
-          cameraControlsRef.current.addEventListener("control", handleControl);
+          controls.addEventListener("control", handleControl);
           setControlListener(() => handleControl);
-        }, 1000); // 等待1秒让重置动画完成
+        };
+        controls.addEventListener("rest", onRestAfterReset);
 
         return;
+      } else {
+        cameraControlsRef.current.saveState();
+        moveCamera({ cameraControlsRef, x: 0, y: 7.3, z: 0, zoomRate: 4 });
+
+        const handleControl = () => {
+          setZoomedIn(true);
+        };
+
+        cameraControlsRef.current.addEventListener("control", handleControl);
+        setControlListener(() => handleControl);
+
+        return () => {
+          if (cameraControlsRef.current) {
+            cameraControlsRef.current.removeEventListener(
+              "control",
+              handleControl
+            );
+          }
+        };
       }
-
-      cameraControlsRef.current.saveState();
-      moveCamera({ cameraControlsRef, x: 0, y: 7.3, z: 0, zoomRate: 4 });
-
-      const handleControl = () => {
-        setZoomedIn(true);
-      };
-
-      cameraControlsRef.current.addEventListener("control", handleControl);
-      setControlListener(() => handleControl);
-
-      return () => {
-        if (cameraControlsRef.current) {
-          cameraControlsRef.current.removeEventListener(
-            "control",
-            handleControl
-          );
-        }
-      };
     }
   }, [clicked]);
 
   useEffect(() => {
     if (isZoomedIn === true) {
+      cameraControlsRef.current.smoothTime = 1.5;
       if (controlListener && cameraControlsRef.current) {
         cameraControlsRef.current.removeEventListener(
           "control",
           controlListener
         );
       }
-
       cameraControlsRef.current.reset(true);
-
       setZoomedIn(false);
       setControlListener(null);
       setClicked(!clicked);
@@ -260,7 +260,7 @@ export default function Scene({ cameraControlsRef, onModelClick }: SceneProps) {
         dollySpeed={0.1}
         minPolarAngle={0}
         maxPolarAngle={Math.PI / 2}
-        smoothTime={10}
+        smoothTime={1}
         truck={false}
         setOrbitPoint={[2.5, 0, -2.5]}
       />

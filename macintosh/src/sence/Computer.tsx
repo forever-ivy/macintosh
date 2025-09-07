@@ -64,8 +64,8 @@ const Computer = forwardRef<THREE.Object3D, ComputerProps>(
       >
         <ComputerModel ref={ref} onModelClick={onModelClick}>
           <Html
-            position={[1.93, 0.73, -1.96]} // 使用 Leva 控制的位置
-            rotation={[-0.1, -0.78, -0.08]} // 添加旋转控制
+            position={[1.93, 0.73, -1.96]}
+            rotation={[-0.1, -0.78, -0.08]}
             transform
             occlude
             style={{
