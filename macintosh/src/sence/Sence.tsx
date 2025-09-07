@@ -80,8 +80,8 @@ export default function Scene({ cameraControlsRef, onModelClick }: SceneProps) {
       { value: 0 },
       {
         value: 1,
-        duration: 10,
-        delay: 1.5,
+        duration: 0.1,
+        delay: 0,
         ease: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         onUpdate() {
           const value = animationProgress.value;
@@ -180,7 +180,7 @@ export default function Scene({ cameraControlsRef, onModelClick }: SceneProps) {
         const onRestAfterReset = () => {
           controls.removeEventListener("rest", onRestAfterReset); // 一次性监听
           controls.saveState(); // 在稳定终点保存
-          moveCamera({ cameraControlsRef, x: 0, y: 7.3, z: 0, zoomRate: 4 });
+          moveCamera({ cameraControlsRef, x: 0, y: 7.5, z: 0, zoomRate: 3.7 });
 
           // 保持你原有的 control 监听逻辑不变
           const handleControl = () => {
@@ -194,7 +194,7 @@ export default function Scene({ cameraControlsRef, onModelClick }: SceneProps) {
         return;
       } else {
         cameraControlsRef.current.saveState();
-        moveCamera({ cameraControlsRef, x: 0, y: 7.3, z: 0, zoomRate: 4 });
+        moveCamera({ cameraControlsRef, x: 0, y: 7.5, z: 0, zoomRate: 3.7 });
 
         const handleControl = () => {
           setZoomedIn(true);

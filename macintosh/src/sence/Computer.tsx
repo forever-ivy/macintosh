@@ -2,7 +2,6 @@ import { useGLTF, Html } from "@react-three/drei";
 import { Suspense, useEffect, forwardRef, type ReactNode } from "react";
 import * as THREE from "three";
 import type { ThreeEvent } from "@react-three/fiber";
-import { useControls } from "leva";
 
 interface ComputerProps {
   onModelClick?: () => void;
@@ -47,17 +46,6 @@ ComputerModel.displayName = "ComputerModel";
 
 const Computer = forwardRef<THREE.Object3D, ComputerProps>(
   ({ onModelClick }, ref) => {
-    // Leva 控制器
-    const { positionX, positionY, positionZ, rotationX, rotationY, rotationZ } =
-      useControls("Html Screen Position & Rotation", {
-        positionX: { value: 1.93, min: -5, max: 5, step: 0.01 },
-        positionY: { value: 0.73, min: -5, max: 5, step: 0.01 },
-        positionZ: { value: -1.96, min: -5, max: 5, step: 0.01 },
-        rotationX: { value: -0.1, min: -Math.PI, max: Math.PI, step: 0.01 },
-        rotationY: { value: -0.78, min: -Math.PI, max: Math.PI, step: 0.01 },
-        rotationZ: { value: -0.08, min: -Math.PI, max: Math.PI, step: 0.01 },
-      });
-
     return (
       <Suspense
         fallback={
@@ -69,18 +57,27 @@ const Computer = forwardRef<THREE.Object3D, ComputerProps>(
       >
         <ComputerModel ref={ref} onModelClick={onModelClick}>
           <Html
-            position={[positionX, positionY, positionZ]}
-            rotation={[rotationX, rotationY, rotationZ]}
+            position={[1.9, 0.7, -1.91]}
+            rotation={[-0.1, -0.78, -0.07]}
             transform
             occlude
-            distanceFactor={1.5}
+            distanceFactor={1.75}
           >
             <iframe
               src="https://localhost:3000"
               style={{
-                width: 730,
-                height: 530,
-                borderRadius: "4px",
+                width: 717,
+                height: 550,
+                borderRadius: "10px",
+                overflow: "hidden", // 保证圆角处不露白
+                border: "1px solid #E6D8C3", // 更细腻、偏低饱和度的米色描边
+                boxShadow: [
+                  "0 10px 28px rgba(0, 0, 0, 0.35)", // 外部柔和阴影（层次感）
+                  "0 0 0 1px rgba(255, 255, 255, 0.28) inset", // 内部高光描边（塑料/玻璃质感）
+                  "0 1px 0 rgba(255, 255, 255, 0.65) inset", // 顶部内侧高光
+                  "0 -1px 0 rgba(0, 0, 0, 0.06) inset", // 底部内侧微阴影
+                ].join(", "),
+                backgroundColor: "#FDFBF7", // 温和底色，增强整体观感
               }}
             />
           </Html>
