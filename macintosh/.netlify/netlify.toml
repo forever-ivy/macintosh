@@ -1,0 +1,28 @@
+plugins = []
+headers = []
+redirects = []
+
+[functions]
+
+[functions."*"]
+
+[build]
+publish = "/Users/ivy/Documents/PersonalWebsite/macintosh/macintosh/dist"
+publishOrigin = "ui"
+commandOrigin = "ui"
+base = "/Users/ivy/Documents/PersonalWebsite/macintosh/macintosh"
+command = "npm run build"
+
+[build.environment]
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]

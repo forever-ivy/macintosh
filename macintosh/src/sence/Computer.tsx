@@ -66,6 +66,11 @@ const Computer = forwardRef<THREE.Object3D, ComputerProps>(
             <div
               onClick={(e) => {
                 e.stopPropagation();
+                // 点击后跳转到新页面
+                window.open(
+                  " https://splendid-starlight-6c6ffb.netlify.app/",
+                  "_blank"
+                );
                 onModelClick?.();
               }}
               style={{
@@ -74,21 +79,21 @@ const Computer = forwardRef<THREE.Object3D, ComputerProps>(
               }}
             >
               <iframe
-                src="https://localhost:3000"
+                src="https://splendid-starlight-6c6ffb.netlify.app/"
                 style={{
                   width: 717,
                   height: 550,
                   borderRadius: "10px",
-                  overflow: "hidden", // 保证圆角处不露白
-                  border: "1px solid #E6D8C3", // 更细腻、偏低饱和度的米色描边
+                  overflow: "hidden",
+                  border: "1px solid #E6D8C3",
                   boxShadow: [
-                    "0 10px 28px rgba(0, 0, 0, 0.35)", // 外部柔和阴影（层次感）
-                    "0 0 0 1px rgba(255, 255, 255, 0.28) inset", // 内部高光描边（塑料/玻璃质感）
-                    "0 1px 0 rgba(255, 255, 255, 0.65) inset", // 顶部内侧高光
-                    "0 -1px 0 rgba(0, 0, 0, 0.06) inset", // 底部内侧微阴影
+                    "0 10px 28px rgba(0, 0, 0, 0.35)",
+                    "0 0 0 1px rgba(255, 255, 255, 0.28) inset",
+                    "0 1px 0 rgba(255, 255, 255, 0.65) inset",
+                    "0 -1px 0 rgba(0, 0, 0, 0.06) inset",
                   ].join(", "),
-                  backgroundColor: "#FDFBF7", // 温和底色，增强整体观感
-                  pointerEvents: "none", // 防止iframe内容拦截点击事件
+                  backgroundColor: "#FDFBF7",
+                  pointerEvents: "none", // 保持none，防止iframe拦截点击
                 }}
               />
             </div>
