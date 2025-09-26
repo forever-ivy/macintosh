@@ -1,44 +1,95 @@
 # Macintosh 3D Interactive Experience
 
-一个使用 React Three Fiber 构建的交互式 3D Macintosh 电脑展示项目。
+An interactive 3D Macintosh computer experience built with React Three Fiber.  
+This project renders a vintage Macintosh model and embeds an external portfolio site on the computer screen via an iframe.
 
-## 🚀 特性
+## 🚀 Features
 
-- 🖥️ 高质量 3D Macintosh 模型
-- 🎮 交互式相机控制
-- 🎵 环境音效和背景音乐
-- 📱 响应式设计
-- ⚡ 基于 Vite 的快速开发
+- High-quality 3D Macintosh model
+- Interactive camera controls
+- Ambient sound and background music
+- Responsive layout
+- Fast development with Vite
+- Integrates an external portfolio website in the computer screen (via iframe)
 
-## 🛠️ 技术栈
+## 🛠️ Tech Stack
 
-- **React 18** - UI 框架
-- **Three.js** - 3D 图形库
-- **React Three Fiber** - React 的 Three.js 渲染器
-- **React Three Drei** - 有用的 R3F 助手
-- **TypeScript** - 类型安全
-- **Vite** - 构建工具
-- **Tailwind CSS** - 样式框架
-- **Zustand** - 状态管理
+- React 18
+- Three.js
+- React Three Fiber
+- React Three Drei
+- TypeScript
+- Vite
+- Tailwind CSS
+- Zustand
 
-## 📦 安装和运行
+## 📁 Project Structure
 
-```bash
-# 克隆项目
-git clone https://github.com/你的用户名/macintosh.git
-cd macintosh
+- public/
+- src/
+  - pages/
+  - sence/ # Scene components (including Computer.tsx and main Sence.tsx)
+  - stores/ # Zustand stores
+  - ui/
+  - utils/
+  - assets/
+- static/ # 3D assets (audio, draco, environment, images, models, textures, transition)
+- dist/ # Build output (ignored by git)
+- .netlify/ # Netlify deployment metadata (ignored by git)
 
-# 安装依赖
-npm install
+## 📦 Setup
 
-# 启动开发服务器
-npm run dev
+Prerequisites:
 
-# 构建生产版本
-npm run build
+- Node.js 18+
+- pnpm or npm
 
-# 预览构建结果
-npm run preview
-```
+Install dependencies:
 
-## 🎯 项目结构
+- npm:
+  - `npm install`
+- pnpm:
+  - `pnpm install`
+
+Start development:
+
+- npm:
+  - `npm run dev`
+- pnpm:
+  - `pnpm dev`
+
+Build for production:
+
+- npm:
+  - `npm run build`
+- pnpm:
+  - `pnpm build`
+
+Preview production build:
+
+- npm:
+  - `npm run preview`
+- pnpm:
+  - `pnpm preview`
+
+## 🔗 Integration with Portfolio
+
+This project embeds the “os-macintosh-portfolio” site inside the Macintosh screen via an iframe.
+
+- Code location: `src/sence/Computer.tsx`
+- Update the iframe `src` to point to the production URL of your portfolio (e.g. Netlify URL).
+- Example:
+  - `window.open("https://your-portfolio-url/", "_blank");`
+  - `<iframe src="https://your-portfolio-url/" ... />`
+- Tip: Ensure the portfolio is deployed and publicly accessible; local URLs may not work when this project is deployed.
+
+## 🔒 Security & Open Source Notes
+
+- Do not commit environment files (`.env*`), build outputs (`dist/`, `build/`), `node_modules/`, or deployment metadata (`.netlify/`, `.vercel/`)
+- Avoid hardcoding personal information or private tokens in source code
+- Avoid committing personal configs or secrets (e.g., `config/personal.json`, `secrets/`)
+- Consider adding a LICENSE (e.g. MIT) and a CONTRIBUTING guideline
+
+## 📄 License
+
+MIT (or choose your preferred license)
