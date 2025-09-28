@@ -92,4 +92,4 @@ This project embeds the “os-macintosh-portfolio” site inside the Macintosh s
 
 ## 📄 License
 
-MIT (or choose your preferred license)
+MIT 
